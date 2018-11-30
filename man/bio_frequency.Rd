@@ -14,7 +14,7 @@ bio_frequency(data, columns, freq.percent = "both", include.na = TRUE,
 
 \item{freq.percent}{Whether the table should include frequency counts, percentages or both (options = c("freq", "percent", "both")). Default="both"}
 
-\item{include.na}{Include Na values (options are TRUE/FALSE, default=TRUE)}
+\item{include.na}{Include NA values (options are TRUE/FALSE, default=TRUE)}
 
 \item{remove.vars}{Character vector of variables not to be included in the counts (e.g. remove.vars = c("") remove blanks from the count)}
 }
