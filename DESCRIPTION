@@ -1,0 +1,10 @@
+Package: BioOutputs
+Title: What the Package Does (one line, title case)
+Version: 0.0.0.9000
+Authors@R: person("Katriona", "Goldmann", email = "k.goldmann@qmul.ac.uk", role = c("aut", "cre"))
+Description: Generates some common outputs required in bioinformatic pipelines, analysis and data wrangling.
+Depends: R (>= 3.5.1)
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.0.9000
