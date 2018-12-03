@@ -1,10 +1,7 @@
-#' @include utilities.R ggpar.R stat_chull.R stat_conf_ellipse.R stat_stars.R stat_cor.R
+
 NULL
 #' Correlation plot
 #' @description Create a correlation plot. Taken from kassambara/ggpubr just changed the default arguments
-#' @inheritParams ggboxplot
-#' @inheritParams facet
-#' @inheritParams ggpar
 #' @param x,y x and y variables for drawing.
 #' @param color,fill point colors.
 #' @param shape point shape. See \code{\link{show_point_shapes}}.
@@ -666,4 +663,9 @@ fill_palette <- function(palette = NULL, ...){
 	}
 	else if (palette[1] != "")
 		ggplot2::scale_fill_manual(..., values = palette)
+}
+
+
+.ggcolor <- function(palette = NULL, ...) {
+	color_palette(palette = palette, ...)
 }

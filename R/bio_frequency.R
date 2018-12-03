@@ -9,7 +9,7 @@
 #' @keywords frequency, counts, table
 #' @export
 #' @examples
-#' bio_freqtab(mtcars, columns=c("vs", "am"))
+#' bio_frequency(mtcars, columns=c("vs", "am"))
 
 
 
