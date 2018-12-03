@@ -9,3 +9,13 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0.9000
 Imports: ggplot2
+Collate: 
+    'stat_cor.R'
+    'stat_stars.R'
+    'stat_conf_ellipse.R'
+    'stat_chull.R'
+    'ggpar.R'
+    'utilities.R'
+    'bio_corr.R'
+    'bio_freqtab.R'
+    'bio_volcano.R'
