@@ -47,8 +47,9 @@ bio_volcano<- function(toptable, fc.col="log2FC", padj.col=NULL, padj.method="fd
 	marker.colour = setNames(marker.colour, levels(toptable$Significance))
 	if(is.null(legend.labs)) legend.labs=levels(droplevels(toptable$Significance))
 	
+	toptable$logFC <- toptable[, fc.col]
 	
-	plot <- ggplot(toptable, aes(x=log2FoldChange, y=-log10(pvalue), color=Significance) ) +
+	plot <- ggplot(toptable, aes(x=logFC, y=-log10(pvalue), color=Significance) ) +
 		
 		geom_point(alpha=1/2, size=1.) +	scale_color_manual(labels=legend.labs, values=marker.colour) +
 		
