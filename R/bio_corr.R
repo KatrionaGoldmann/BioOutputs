@@ -71,6 +71,7 @@ NULL
 #'   and TRUE always includes.
 #' @param ... other arguments to be passed to \code{\link[ggplot2]{geom_point}}
 #'   and \code{\link{ggpar}}.
+#' @import dplyr
 #' @details The plot can be easily customized using the function ggpar(). Read
 #'   ?ggpar for changing: \itemize{ \item main title and axis labels: main,
 #'   xlab, ylab \item axis limits: xlim, ylim (e.g.: ylim = c(0, 30)) \item axis
@@ -136,73 +137,73 @@ NULL
 #'
 #'
 #' @export
-bio_corr <- function(data, x, y, combine = FALSE, merge = FALSE,
-											color = "black", fill = "lightgray", palette = NULL,
-											shape = 19, size = 2, point = TRUE,  rug = FALSE,
-											title = NULL, xlab = NULL, ylab = NULL,
-											facet.by = NULL, panel.labs = NULL, short.panel.labs = TRUE,
-											add = c("none", "reg.line", "loess"), add.params = list(),
-											conf.int = FALSE, conf.int.level = 0.95, fullrange = TRUE,
-											ellipse = FALSE, ellipse.level = 0.95,
-											ellipse.type = "norm", ellipse.alpha = 0.1,
-											ellipse.border.remove = FALSE,
-											mean.point = FALSE, mean.point.size = ifelse(is.numeric(size), 2*size, size),
-											star.plot = FALSE, star.plot.lty = 1, star.plot.lwd = NULL,
-											label = NULL,  font.label = c(12, "plain"), font.family = "",
-											label.select = NULL, repel = FALSE, label.rectangle = FALSE,
-											cor.coef = FALSE, cor.coeff.args = list(), cor.method = "pearson", cor.coef.coord = c(NULL, NULL), cor.coef.size = 4,
-											ggp = NULL, show.legend.text = NA,
-											ggtheme = theme_pubr(),
-											...){
-	
-	
-	# Default options
-	#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	.opts <- list(
-		combine = combine, merge = merge,
-		color = color, fill = fill, palette = palette,
-		title = title, xlab = xlab, ylab = ylab,
-		facet.by = facet.by, panel.labs = panel.labs, short.panel.labs = short.panel.labs,
-		shape = shape, size = size, point = point,  rug = rug,
-		add = add, add.params = add.params,
-		conf.int = conf.int, conf.int.level = conf.int.level, fullrange = fullrange,
-		ellipse = ellipse, ellipse.level = ellipse.level,
-		ellipse.type = ellipse.type, ellipse.alpha = ellipse.alpha,
-		ellipse.border.remove = ellipse.border.remove,
-		mean.point = mean.point, mean.point.size = mean.point.size,
-		star.plot = star.plot, star.plot.lty = star.plot.lty, star.plot.lwd = star.plot.lwd,
-		label = label, font.label = font.label, font.family = font.family,
-		label.select = label.select, repel = repel, label.rectangle = label.rectangle,
-		cor.coef = cor.coef, cor.coeff.args = cor.coeff.args, cor.method = cor.method,
-		cor.coef.coord = cor.coef.coord, cor.coef.size = cor.coef.size,
-		ggp = ggp, show.legend.text = show.legend.text, ggtheme = ggtheme, ...)
-	
-	if(!missing(data)) .opts$data <- data
-	if(!missing(x)) .opts$x <- x
-	if(!missing(y)) .opts$y <- y
-	
-	# User options
-	#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	.user.opts <- as.list(match.call(expand.dots = TRUE))
-	.user.opts[[1]] <- NULL # Remove the function name
-	# keep only user arguments
-	for(opt.name in names(.opts)){
-		if(is.null(.user.opts[[opt.name]]))
-			.opts[[opt.name]] <- NULL
-	}
-	
-	font.label <- .parse_font(font.label) %>% .compact()
-	font.label$color <- ifelse(is.null(font.label$color), color, font.label$color)
-	.opts$font.label <- font.label
-	
-	.opts$fun <- ggscatter_core
-	if(missing(ggtheme) & (!is.null(facet.by) | combine))
-		.opts$ggtheme <- theme_pubr(border = TRUE)
-	p <- do.call(.plotter, .opts)
-	if(.is_list(p) & length(p) == 1) p <- p[[1]]
-	return(p)
-	
-}
+# bio_corr <- function(data, x, y, combine = FALSE, merge = FALSE,
+# 											color = "black", fill = "lightgray", palette = NULL,
+# 											shape = 19, size = 2, point = TRUE,  rug = FALSE,
+# 											title = NULL, xlab = NULL, ylab = NULL,
+# 											facet.by = NULL, panel.labs = NULL, short.panel.labs = TRUE,
+# 											add = c("none", "reg.line", "loess"), add.params = list(),
+# 											conf.int = FALSE, conf.int.level = 0.95, fullrange = TRUE,
+# 											ellipse = FALSE, ellipse.level = 0.95,
+# 											ellipse.type = "norm", ellipse.alpha = 0.1,
+# 											ellipse.border.remove = FALSE,
+# 											mean.point = FALSE, mean.point.size = ifelse(is.numeric(size), 2*size, size),
+# 											star.plot = FALSE, star.plot.lty = 1, star.plot.lwd = NULL,
+# 											label = NULL,  font.label = c(12, "plain"), font.family = "",
+# 											label.select = NULL, repel = FALSE, label.rectangle = FALSE,
+# 											cor.coef = FALSE, cor.coeff.args = list(), cor.method = "pearson", cor.coef.coord = c(NULL, NULL), cor.coef.size = 4,
+# 											ggp = NULL, show.legend.text = NA,
+# 											ggtheme = theme_pubr(),
+# 											...){
+# 	
+# 	
+# 	# Default options
+# 	#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# 	.opts <- list(
+# 		combine = combine, merge = merge,
+# 		color = color, fill = fill, palette = palette,
+# 		title = title, xlab = xlab, ylab = ylab,
+# 		facet.by = facet.by, panel.labs = panel.labs, short.panel.labs = short.panel.labs,
+# 		shape = shape, size = size, point = point,  rug = rug,
+# 		add = add, add.params = add.params,
+# 		conf.int = conf.int, conf.int.level = conf.int.level, fullrange = fullrange,
+# 		ellipse = ellipse, ellipse.level = ellipse.level,
+# 		ellipse.type = ellipse.type, ellipse.alpha = ellipse.alpha,
+# 		ellipse.border.remove = ellipse.border.remove,
+# 		mean.point = mean.point, mean.point.size = mean.point.size,
+# 		star.plot = star.plot, star.plot.lty = star.plot.lty, star.plot.lwd = star.plot.lwd,
+# 		label = label, font.label = font.label, font.family = font.family,
+# 		label.select = label.select, repel = repel, label.rectangle = label.rectangle,
+# 		cor.coef = cor.coef, cor.coeff.args = cor.coeff.args, cor.method = cor.method,
+# 		cor.coef.coord = cor.coef.coord, cor.coef.size = cor.coef.size,
+# 		ggp = ggp, show.legend.text = show.legend.text, ggtheme = ggtheme, ...)
+# 	
+# 	if(!missing(data)) .opts$data <- data
+# 	if(!missing(x)) .opts$x <- x
+# 	if(!missing(y)) .opts$y <- y
+# 	
+# 	# User options
+# 	#:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+# 	.user.opts <- as.list(match.call(expand.dots = TRUE))
+# 	.user.opts[[1]] <- NULL # Remove the function name
+# 	# keep only user arguments
+# 	for(opt.name in names(.opts)){
+# 		if(is.null(.user.opts[[opt.name]]))
+# 			.opts[[opt.name]] <- NULL
+# 	}
+# 	
+# 	font.label <- .parse_font(font.label) %>% .compact()
+# 	font.label$color <- ifelse(is.null(font.label$color), color, font.label$color)
+# 	.opts$font.label <- font.label
+# 	
+# 	.opts$fun <- ggscatter_core
+# 	if(missing(ggtheme) & (!is.null(facet.by) | combine))
+# 		.opts$ggtheme <- theme_pubr(border = TRUE)
+# 	p <- do.call(.plotter, .opts)
+# 	if(.is_list(p) & length(p) == 1) p <- p[[1]]
+# 	return(p)
+# 	
+# }
 
 
 bio_corr <- function(data, x, y,
@@ -391,7 +392,141 @@ bio_corr <- function(data, x, y,
 	p
 }
 
+.brewerpal <- function(){
+	c(
+		# sequential
+		'Blues', 'BuGn', 'BuPu', 'GnBu', 'Greens', 'Greys', 'Oranges',
+		'OrRd', 'PuBu', 'PuBuGn', 'PuRd', 'Purples', 'RdPu', 'Reds',
+		'YlGn', 'YlGnBu YlOrBr', 'YlOrRd',
+		#Divergent
+		'BrBG', 'PiYG', 'PRGn', 'PuOr', 'RdBu', 'RdGy', 'RdYlBu', 'RdYlGn', 'Spectral',
+		# Qualitative
+		'Accent', 'Dark2', 'Paired', 'Pastel1', 'Pastel2', 'Set1', 'Set2', 'Set3'
+	)
+}
+.ggscipal <- function(){
+	# Scientific Journal and Sci-Fi Themed Color Palettes for ggplot2
+	# ggsci package: https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html
+	c("npg", "aaas", "nejm", "lancet", "jama", "jco", "ucscgb", "d3", "locuszoom",
+		"igv", "uchicago", "startrek", "tron", "futurama", "rickandmorty", "simpsons")
+}
+.is_color <- function(x) {
+	sapply(x, function(X) {
+		tryCatch(is.matrix(grDevices::col2rgb(X)),
+						 error = function(e) FALSE)
+	})
+}
+.ggfill <- function(palette = NULL, ...) {
+	fill_palette(palette = palette, ...)
+}
 
+.is_empty <- function(x){
+	length(x) == 0
+}
+
+.set_axis_limits <- function(xlim = NULL, ylim = NULL){
+	if(!is.null(xlim) | !is.null(ylim)) coord_cartesian(xlim, ylim)
+}
+
+
+.add_item <- function(.list, ...){
+	pms <- list(...)
+	for(pms.names in names(pms)){
+		.list[[pms.names]] <- pms[[pms.names]]
+	}
+	.list
+}
+
+.set_legend <- function(p, legend = NULL,
+												legend.title = NULL, font.legend = NULL)
+{
+	if(is.null(legend.title)) legend.title = waiver()
+	font <- .parse_font(font.legend)
+	
+	if(!is.null(legend)) p <- p + theme(legend.position = legend)
+	
+	if(!.is_empty(legend.title)){
+		
+		if(.is_list(legend.title)) p <- p + do.call(ggplot2::labs, legend.title)
+		else p <- p +
+				labs(color = legend.title, fill = legend.title, linetype = legend.title, shape = legend.title)
+	}
+	
+	if(!is.null(font)){
+		p <- p + theme(
+			legend.text = element_text(size = font$size,
+																 face = font$face, colour = font$color),
+			legend.title = element_text(size = font$size,
+																	face = font$face, colour = font$color)
+		)
+	}
+	
+	p
+}
+
+.get_gg_xy_variables <- function(p){
+	. <- NULL
+	x <- p$mapping['x'] %>% as.character() %>% gsub("~", "", .)
+	y <- p$mapping['y'] %>% as.character() %>% gsub("~", "", .)
+	xy <- c(x, y)
+	names(xy) <- c("x", "y")
+	return(xy)
+}
+
+.set_ticksby <- function(p, xticks.by = NULL, yticks.by = NULL)
+{
+	.data <- p$data
+	# .mapping <- as.character(p$mapping)
+	.mapping <- .get_gg_xy_variables(p)
+	
+	if(!is.null(yticks.by)) {
+		y <- .data[, .mapping["y"]]
+		ybreaks <- seq(0, max(y, na.rm = TRUE), by = yticks.by)
+		p <- p + scale_y_continuous(breaks = ybreaks)
+	}
+	else if(!is.null(xticks.by)) {
+		x <- .data[, .mapping["x"]]
+		xbreaks <- seq(0, max(x, na.rm = TRUE), by = xticks.by)
+		p <- p + scale_x_continuous(breaks = xbreaks)
+	}
+	p
+}
+.set_ticks <-
+	function(ticks = TRUE, tickslab = TRUE, font.tickslab = NULL,
+					 xtickslab.rt = NULL, ytickslab.rt = NULL,
+					 font.xtickslab = font.tickslab, font.ytickslab = font.tickslab)
+	{
+		
+		. <- xhjust <- NULL
+		if(!is.null(xtickslab.rt)) {
+			if(xtickslab.rt > 5) xhjust <- 1
+		}
+		else xhjust <- NULL
+		
+		if (ticks)
+			ticks <-
+				element_line(colour = "black")
+		else
+			ticks <- element_blank()
+		
+		if (is.null(font.xtickslab)) font.x <- list()
+		else font.x <- .parse_font(font.xtickslab)
+		if (is.null(font.ytickslab)) font.y <- list()
+		else font.y <- .parse_font(font.ytickslab)
+		
+		if (tickslab) {
+			xtickslab <- font.x %>% .add_item(hjust = xhjust, angle = xtickslab.rt) %>%
+				do.call(element_text, .)
+			ytickslab <- font.y %>% .add_item(angle = ytickslab.rt) %>% do.call(element_text, .)
+		}
+		else {
+			xtickslab <- element_blank()
+			ytickslab <- element_blank()
+		}
+		theme(
+			axis.ticks = ticks, axis.text.x = xtickslab, axis.text.y = ytickslab
+		)
+	}
 
 # Add convex ellipse
 # data a data frame
@@ -615,6 +750,151 @@ ggpar <- function(p, palette = NULL, gradient.cols = NULL,
 	
 	if(is.ggplot(original.p)) list.plots[[1]]
 	else list.plots
+}
+
+.set_orientation <-
+	function(p, orientation = c("vertical", "horizontal", "reverse")) {
+		ori <- match.arg(orientation)
+		if (ori == "horizontal") p + coord_flip()
+		else if (ori == "reverse")
+			p + scale_y_reverse()
+		else p
+	}
+
+.labs <- function(p, main = NULL, xlab = NULL, ylab = NULL,
+									font.main = NULL, font.x = NULL, font.y = NULL,
+									submain = NULL, caption = NULL,
+									font.submain = NULL, font.caption = NULL)
+{
+	
+	font.main <- .parse_font(font.main)
+	font.x <- .parse_font(font.x)
+	font.y <- .parse_font(font.y)
+	font.submain <- .parse_font(font.submain)
+	font.caption <- .parse_font(font.caption)
+	
+	if(is.logical(main)){
+		if(!main) main <- NULL
+	}
+	
+	if(is.logical(submain)){
+		if(!submain) submain <- NULL
+	}
+	
+	if(is.logical(caption)){
+		if(!caption) caption <- NULL
+	}
+	
+	
+	if (!is.null(main)) {
+		p <- p + labs(title = main)
+	}
+	
+	if (!is.null(submain)) {
+		p <- p + labs(subtitle = submain)
+	}
+	
+	if (!is.null(caption)) {
+		p <- p + labs(caption = caption)
+	}
+	
+	if (!is.null(xlab)) {
+		if (xlab == FALSE)
+			p <- p + theme(axis.title.x = element_blank())
+		else
+			p <- p + labs(x = xlab)
+	}
+	
+	if (!is.null(ylab)) {
+		if (ylab == FALSE)
+			p <- p + theme(axis.title.y = element_blank())
+		else
+			p <- p + labs(y = ylab)
+	}
+	
+	if (!is.null(font.main))
+		p <-
+		p + theme(
+			plot.title = element_text(
+				size = font.main$size,
+				lineheight = 1.0, face = font.main$face, colour = font.main$color
+			)
+		)
+	if (!is.null(font.submain))
+		p <-
+		p + theme(
+			plot.subtitle = element_text(
+				size = font.submain$size,
+				lineheight = 1.0, face = font.submain$face, colour = font.submain$color
+			)
+		)
+	if (!is.null(font.caption))
+		p <-
+		p + theme(
+			plot.caption = element_text(
+				size = font.caption$size,
+				lineheight = 1.0, face = font.caption$face, colour = font.caption$color
+			)
+		)
+	if (!is.null(font.x))
+		p <-
+		p + theme(axis.title.x = element_text(
+			size = font.x$size,
+			face = font.x$face, colour = font.x$color
+		))
+	if (!is.null(font.y))
+		p <-
+		p + theme(axis.title.y = element_text(
+			size = font.y$size,
+			face = font.y$face, colour = font.y$color
+		))
+	
+	
+	
+	p
+}
+
+.set_scale <- function (p, xscale = c("none", "log2", "log10", "sqrt"),
+												yscale = c("none", "log2", "log10", "sqrt"),
+												format.scale = FALSE)
+{
+	
+	xscale <- match.arg(xscale)
+	yscale <- match.arg(yscale)
+	.x <- ".x"
+	
+	if(format.scale){
+		if(!requireNamespace("scales")) stop("The R package 'scales' is required.")
+		
+		if(yscale == "log2"){
+			p <- p + scale_y_continuous(trans = scales::log2_trans(),
+																	breaks = scales::trans_breaks("log2", function(x) 2^x),
+																	labels = scales::trans_format("log2", scales::math_format(2^.x)))
+		}
+		else if(yscale == "log10"){
+			p <- p + scale_y_continuous(trans = scales::log10_trans(),
+																	breaks = scales::trans_breaks("log10", function(x) 10^x),
+																	labels = scales::trans_format("log10", scales::math_format(10^.x)))
+		}
+		
+		if(xscale == "log2"){
+			p <- p + scale_x_continuous(trans = scales::log2_trans(),
+																	breaks = scales::trans_breaks("log2", function(x) 2^x),
+																	labels = scales::trans_format("log2", scales::math_format(2^.x)))
+		}
+		else if(xscale == "log10"){
+			p <- p + scale_x_continuous(trans = scales::log10_trans(),
+																	breaks = scales::trans_breaks("log10", function(x) 10^x),
+																	labels = scales::trans_format("log10", scales::math_format(10^.x)))
+		}
+		
+	}
+	
+	else{
+		if(xscale != "none")  p <- p + scale_x_continuous(trans = xscale)
+		if(yscale != "none") p <- p + scale_y_continuous(trans = yscale)
+	}
+	p
 }
 
 color_palette <- function(palette = NULL, ...) {

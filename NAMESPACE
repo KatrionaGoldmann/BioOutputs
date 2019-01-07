@@ -3,5 +3,6 @@
 export(bio_corr)
 export(bio_frequency)
 export(bio_volcano)
+import(dplyr)
 import(ggplot2)
 import(ggrepel)
