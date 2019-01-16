@@ -1,12 +1,10 @@
 Package: BioOutputs
-Title: What the Package Does (One Line, Title Case)
+Title: Visualisation of Biological Data 
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com")
-Description: What the package does (one paragraph).
+    person("Katriona", "Goldmann", email = "k.goldmann@qmul.ac.uk",
+                  role = c("aut", "cre"))
+Description: This package contains common R scripts I use in my day to day data analysis of biological data. The scripts are primarily for plotting and visualisation, with some data organisation thrown in as well. 
 License: What license it uses
 Encoding: UTF-8
 LazyData: true

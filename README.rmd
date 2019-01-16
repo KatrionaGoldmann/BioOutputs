@@ -1,0 +1,178 @@
+---
+title: "BioOutputs"
+output:
+  md_document:
+    md_extensions: -markdown_in_html_blocks
+    toc: yes
+---
+
+-----
+
+# BioOutputs
+
+This package contains common R scripts I use in my day to day data analysis of biological data. The scripts are primarily for plotting and visualisation, with some data organisation thrown in as well. 
+
+-----
+
+## Gallery
+
+
+```{r, results='asis', echo=FALSE}
+plots <- list.files("./figs", pattern="*.png")
+plots <- paste0("./figs", '/', plots)
+ 
+
+cat('<table border="1">
+  <tr>
+    <td align="center" style="vertical-align:top" height="200"><a href="#bires">Bi-Results</a><img src=',plots[1],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#corrp">Correlation Plot</a><img src=',plots[2],' height="150" width="330"/></td>
+    <td style="vertical-align:top" align="center" height="200"><a href="#freq">Frequency Table</a><img src=',plots[3],' height="50" width="330"/></td>
+  </tr>
+<tr>
+    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[4],' height="150" width="330"/></td>
+  </tr>
+</table>')
+
+
+```
+
+-----
+
+## Required packages 
+  [`dplyr`](https://dplyr.tidyverse.org)
+  [`ggplot2`](https://ggplot2.tidyverse.org)
+  [`ggrepel`](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html)
+
+-----
+
+## Install Package
+
+First install devtools to allow installation from gitub and any other required packages. 
+```{r, eval=FALSE}
+install.packages("devtools")
+library("devtools")
+```
+
+```{r}
+library(devtools)
+library(knitr)
+```
+
+Now install the BioOutputs package.
+```{r, eval=FALSE}
+install_github("KatrionaGoldmann/BioOutputs")
+library("BioOutputs")
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+library("devtools")
+library(roxygen2)
+
+#Initialize the package
+setwd("~/Documents/Git/")
+
+# Load/update the package
+package.name="BioOutputs"
+setwd(paste("~/Documents/Git/", package.name, sep=""))
+document()
+```
+
+-----
+
+<a id="corrp"></a>
+
+## bio_corr 
+
+Create a correlation plot. Taken from kassambara/ggpubr just changed the default arguments. 
+
+So we can use the classic example with the *mtcars* data frames:
+
+```{r}
+kable(head(mtcars))
+```
+
+```{r bio_corr}
+bio_corr(mtcars, "qsec", "wt")
+```
+
+-----
+
+<a id="freq"></a>
+
+## bio_frequency
+
+The *bio_frequency()* function generates a frequency table from factor or character vector columns in a data frame. This has the following arguments:
+
+Argument           | 
+-------------------|----------------------------------------------------
+data         | A data frame containing columns to be counted  
+columns           | Column names or indices to be counted in data  
+freq.percent     | Whether the table should include frequency counts, percentages or both (options = c("freq", "percent", "both")). Default="both"  
+include.na         | Include NA values (options are TRUE/FALSE, default=TRUE)  
+remove.vars         | Character vector of variables not to be included in the counts (e.g. remove.vars = c("") remove blanks from the count)
+
+
+
+Then if we want to see the breakdown of, say, the gear column in mtcars we can apply:
+
+```{r}
+kable(bio_frequency(mtcars, "gear"))
+```
+
+And if wanted we can remove one variable from the table. This is useful if we have unknowns or the likes.
+
+```{r}
+kable(bio_frequency(mtcars, "gear", remove.vars=c("5")))
+```
+
+-----
+
+<a id="volc"></a>
+
+## bio_volcano
+
+This function generates a volcano plot from a top table using ggplot. The function contains many parameters, use `?bio_volcano` to interogate. 
+
+Lets look at the leukemia data set
+
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
+BiocManager::install("leukemiasEset", version = "3.8")
+```
+
+```{r, message=FALSE, warning=FALSE}
+library(leukemiasEset)
+library(limma)
+```
+
+```{r, message=FALSE, warning=FALSE}
+data(leukemiasEset)
+ourData <- leukemiasEset[, leukemiasEset$LeukemiaType %in% c("ALL", "NoL")]
+ourData$LeukemiaType <- factor(ourData$LeukemiaType)
+
+design <- model.matrix(~ ourData$LeukemiaType)
+fit <- lmFit(ourData, design)
+fit <- eBayes(fit)
+toptable <- topTable(fit)
+toptable$pvalue = toptable$P.Value
+```
+
+```{r bio_volcano}
+bio_volcano(toptable, fc.col="logFC", label.row.indices=1:10, main="leukemia", add.lines=FALSE)
+```
+
+
+-----
+
+<a id="bires"></a>
+
+## bio_bires 
+
+This function colours data according to whether it is below or above a defined plane. The plane is plotted as a line and data can be output as either a line or markers/points. 
+
+```{r bires}
+data(beavers)
+df.plane = beaver1
+df.data = beaver2
+df.plane$temp <- df.plane$temp + 0.5
+bio_bires(x="time", y="temp", df.data, x.plane="time", y.plane="temp", df.plane)
+```
