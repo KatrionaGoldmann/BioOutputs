@@ -1,14 +1,6 @@
-BioOutputs
-==========
-
-This package contains common R scripts I use in my day to day data
-analysis of biological data. The scripts are primarily for plotting and
-visualisation, with some data organisation thrown in as well.
-
-
 -   [BioOutputs](#biooutputs)
-    -   [Required packages:](#required-packages)
     -   [Gallery](#gallery)
+    -   [Required packages](#required-packages)
     -   [Install Package](#install-package)
     -   [bio\_corr](#bio_corr)
     -   [bio\_frequency](#bio_frequency)
@@ -17,11 +9,12 @@ visualisation, with some data organisation thrown in as well.
 
 ------------------------------------------------------------------------
 
-#### Required packages:
+BioOutputs
+==========
 
-[`dplyr`](https://dplyr.tidyverse.org)
-[`ggplot2`](https://ggplot2.tidyverse.org)
-[`ggrepel`](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html)
+This package contains common R scripts I use in my day to day data
+analysis of biological data. The scripts are primarily for plotting and
+visualisation, with some data organisation thrown in as well.
 
 ------------------------------------------------------------------------
 
@@ -35,9 +28,19 @@ Gallery
     <td style="vertical-align:top" align="center" height="200"><a href="#freq">Frequency Table</a><img src= ./figs/bio_freq.png  height="50" width="330"/></td>
   </tr>
 <tr>
+    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Module Plot</a><img src= ./figs/bio_mods.png  height="150" width="330"/></td>
     <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src= ./figs/bio_volcano.png  height="150" width="330"/></td>
   </tr>
 </table>
+
+------------------------------------------------------------------------
+
+Required packages
+-----------------
+
+[`dplyr`](https://dplyr.tidyverse.org)
+[`ggplot2`](https://ggplot2.tidyverse.org)
+[`ggrepel`](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html)
 
 ------------------------------------------------------------------------
 
@@ -48,6 +51,7 @@ First install devtools to allow installation from gitub and any other
 required packages.
 
     install.packages("devtools")
+    library("devtools")
 
     library(devtools)
     library(knitr)

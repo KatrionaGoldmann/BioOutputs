@@ -29,7 +29,8 @@ cat('<table border="1">
     <td style="vertical-align:top" align="center" height="200"><a href="#freq">Frequency Table</a><img src=',plots[3],' height="50" width="330"/></td>
   </tr>
 <tr>
-    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[4],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#mod">Module Plot</a><img src=',plots[4],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[5],' height="150" width="330"/></td>
   </tr>
 </table>')
 
@@ -176,3 +177,27 @@ df.data = beaver2
 df.plane$temp <- df.plane$temp + 0.5
 bio_bires(x="time", y="temp", df.data, x.plane="time", y.plane="temp", df.plane)
 ```
+
+## bio_mods
+
+This function splits expression data into customisable modules and averages over catagories in a given variable. In this example we will look at two Li modules and a custom one I made up. 
+
+```{r}
+load("/Users/phd/Downloads/Complete_web_data_rld.rdata")
+cos.mods <- readRDS("/Users/PhD/Downloads/Module_list_KG.rds")
+```
+
+```{r bires}
+mod_list <- all.mod.list[c("M3", "M47.0", "M156.0")]
+mod_list[["custom MS4A1"]] <- cos.mods$gene[cos.mods$group == "MS4A1"]
+
+exp = rld.syn
+meta <- rld.metadata.syn
+mean.var = "Pathotype"
+cols = NULL
+cluster.rows=FALSE
+keep(mod_list, exp, meta, cluster.rows, cols, mean.var, sure=T)
+bio_mods(exp=exp, mod.list=mod_list, meta=meta, mean.var = "Pathotype", show.names=FALSE, cluster.rows=FALSE)
+
+```
+
