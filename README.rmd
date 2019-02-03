@@ -29,8 +29,9 @@ cat('<table border="1">
     <td style="vertical-align:top" align="center" height="200"><a href="#freq">Frequency Table</a><img src=',plots[3],' height="50" width="330"/></td>
   </tr>
 <tr>
-    <td align="center" style="vertical-align:top" height="200"><a href="#mod">Module Plot</a><img src=',plots[4],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[5],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#mods">Module Plot</a><img src=',plots[4],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#tgcomp">Treatment Group Comparisons</a><img src=',plots[5],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[6],' height="150" width="330"/></td>
   </tr>
 </table>')
 
@@ -43,6 +44,13 @@ cat('<table border="1">
   [`dplyr`](https://dplyr.tidyverse.org)
   [`ggplot2`](https://ggplot2.tidyverse.org)
   [`ggrepel`](https://cran.r-project.org/web/packages/ggrepel/vignettes/ggrepel.html)
+  [`ComplexHeatmap`](http://bioconductor.org/packages/release/bioc/html/ComplexHeatmap.html)
+  [`RColorBrewer`](https://www.rdocumentation.org/packages/RColorBrewer/versions/1.1-2/topics/RColorBrewer)
+  [`Rmisc`](https://www.rdocumentation.org/packages/Rmisc/versions/1.5)
+  [`ggpubr`](https://cran.r-project.org/web/packages/ggpubr/index.html)
+  [`grid`](https://www.rdocumentation.org/packages/grid/versions/3.5.2)
+  [`pBrackets`](https://cran.r-project.org/web/packages/pBrackets/index.html)
+
 
 -----
 
@@ -54,9 +62,10 @@ install.packages("devtools")
 library("devtools")
 ```
 
-```{r}
+```{r, echo=FALSE}
 library(devtools)
 library(knitr)
+library(cowplot)
 ```
 
 Now install the BioOutputs package.
@@ -134,31 +143,37 @@ kable(bio_frequency(mtcars, "gear", remove.vars=c("5")))
 
 This function generates a volcano plot from a top table using ggplot. The function contains many parameters, use `?bio_volcano` to interogate. 
 
-Lets look at the leukemia data set
+Lets look at the ALS patients carrying the C9ORF72 data set
 
-```{r, message=FALSE, warning=FALSE, eval=FALSE}
-BiocManager::install("leukemiasEset", version = "3.8")
+<!-- ```{r, message=FALSE, warning=FALSE, eval=FALSE} -->
+<!-- BiocManager::install("leukemiasEset", version = "3.8") -->
+<!-- ``` -->
+
+<!-- ```{r, message=FALSE, warning=FALSE} -->
+<!-- library(leukemiasEset) -->
+<!-- library(limma) -->
+<!-- ``` -->
+
+<!-- ```{r, message=FALSE, warning=FALSE} -->
+<!-- data(leukemiasEset) -->
+<!-- ourData <- leukemiasEset[, leukemiasEset$LeukemiaType %in% c("ALL", "NoL")] -->
+<!-- ourData$LeukemiaType <- factor(ourData$LeukemiaType) -->
+
+<!-- design <- model.matrix(~ ourData$LeukemiaType) -->
+<!-- fit <- lmFit(ourData, design) -->
+<!-- fit <- eBayes(fit) -->
+<!-- toptable <- topTable(fit) -->
+<!-- toptable$pvalue = toptable$P.Value -->
+<!-- ``` -->
+
+```{r}
+toptable <- read.table("https://gist.githubusercontent.com/stephenturner/806e31fce55a8b7175af/raw/1a507c4c3f9f1baaa3a69187223ff3d3050628d4/results.txt", sep="", header=T)
+rownames(toptable) = toptable$Gene
 ```
 
-```{r, message=FALSE, warning=FALSE}
-library(leukemiasEset)
-library(limma)
-```
-
-```{r, message=FALSE, warning=FALSE}
-data(leukemiasEset)
-ourData <- leukemiasEset[, leukemiasEset$LeukemiaType %in% c("ALL", "NoL")]
-ourData$LeukemiaType <- factor(ourData$LeukemiaType)
-
-design <- model.matrix(~ ourData$LeukemiaType)
-fit <- lmFit(ourData, design)
-fit <- eBayes(fit)
-toptable <- topTable(fit)
-toptable$pvalue = toptable$P.Value
-```
 
 ```{r bio_volcano}
-bio_volcano(toptable, fc.col="logFC", label.row.indices=1:10, main="leukemia", add.lines=FALSE)
+bio_volcano(toptable, fc.col="log2FoldChange", label.row.indices=1:10, main="ALS patients carrying the C9ORF72", add.lines=TRUE)
 ```
 
 
@@ -178,26 +193,44 @@ df.plane$temp <- df.plane$temp + 0.5
 bio_bires(x="time", y="temp", df.data, x.plane="time", y.plane="temp", df.plane)
 ```
 
+<a id="mods"></a>
+
 ## bio_mods
 
 This function splits expression data into customisable modules and averages over catagories in a given variable. In this example we will look at two Li modules and a custom one I made up. 
 
-```{r}
+```{r, echo=FALSE}
 load("/Users/phd/Downloads/Complete_web_data_rld.rdata")
 cos.mods <- readRDS("/Users/PhD/Downloads/Module_list_KG.rds")
+
+mod_list <- all.mod.list[c("M3", "M47.0", "M156.0")]
+mod_list[["custom MS4A1"]] <- as.character(cos.mods$gene[cos.mods$group == "MS4A1"])
+
+names(mod_list) = c(paste("mod", 1:4))
 ```
 
-```{r bires}
-mod_list <- all.mod.list[c("M3", "M47.0", "M156.0")]
-mod_list[["custom MS4A1"]] <- cos.mods$gene[cos.mods$group == "MS4A1"]
-
+```{r mods}
 exp = rld.syn
 meta <- rld.metadata.syn
 mean.var = "Pathotype"
 cols = NULL
 cluster.rows=FALSE
-keep(mod_list, exp, meta, cluster.rows, cols, mean.var, sure=T)
-bio_mods(exp=exp, mod.list=mod_list, meta=meta, mean.var = "Pathotype", show.names=FALSE, cluster.rows=FALSE)
-
+bio_mods(exp=exp, mod.list=mod_list, meta=meta, mean.var = "Pathotype", show.names=TRUE, cluster.rows=FALSE)
 ```
 
+<a id="tgcomp"></a>
+
+## bio_treatmentGroups
+
+```{r}
+library(survival)
+data(kidney)
+
+df <- kidney
+y.col="frail"
+group.col="status"
+x.col="time"
+id.col="id"
+df <- df[df$time < 150, ]
+bio_treatmentGroups(df, group.col="status", y.col="frail", x.col="time")
+```

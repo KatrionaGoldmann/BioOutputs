@@ -5,7 +5,7 @@
 \title{Function to investigate expression for custom modules}
 \usage{
 bio_mods(exp, mod.list, meta, mean.var, cluster.rows = TRUE,
-  cols = c("red", "blue", "green3"), main = "", show.names = TRUE)
+  cols = NULL, main = "", show.names = TRUE, mean.subjects = TRUE)
 }
 \arguments{
 \item{exp}{data frame containing the expression data}
@@ -14,8 +14,6 @@ bio_mods(exp, mod.list, meta, mean.var, cluster.rows = TRUE,
 
 \item{meta}{Dataframe where each column contains an annotation/tract for samples in the heatmap. The order of samples in meta must match that of exp.}
 
-\item{mean.var}{Character defining the meta column to average (mean) over.}
-
 \item{cluster.rows}{The method to use for clustering of rows}
 
 \item{cols}{Chacter vector, or named vector to fix the order, defining the colours of each mean.var group.}
@@ -23,6 +21,10 @@ bio_mods(exp, mod.list, meta, mean.var, cluster.rows = TRUE,
 \item{main}{Title of heatmap}
 
 \item{show.names}{Show row names. Logical.}
+
+\item{mean.subjects}{Logical to determine whether to add a row for the mean value for all subjects in a group}
+
+\item{split.var}{Character defining the meta column to average (mean) over.}
 }
 \description{
 This function exports a complex heatmap looking at the expression of different modules which can be customised

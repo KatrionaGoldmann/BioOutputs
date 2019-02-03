@@ -4,7 +4,8 @@
 #' @param exp data frame containing the expression data
 #' @param mod.list A list of modules. Each element contains the list of genes for a modules. The gene names must match the rownames in the exp dataframe.
 #' @param meta Dataframe where each column contains an annotation/tract for samples in the heatmap. The order of samples in meta must match that of exp. 
-#' @param mean.var Character defining the meta column to average (mean) over. 
+#' @param split.var Character defining the meta column to average (mean) over. 
+#' @param mean.subjects Logical to determine whether to add a row for the mean value for all subjects in a group 
 #' @param cluster.rows The method to use for clustering of rows
 #' @param cols Chacter vector, or named vector to fix the order, defining the colours of each mean.var group. 
 #' @param show.names Show row names. Logical.
@@ -12,12 +13,11 @@
 #' @keywords heatmap, module
 #' @import ComplexHeatmap
 #' @import RColorBrewer
+#' @import grid
 #' @export
 
-bio_mods <- function(exp, mod.list, meta, mean.var,cluster.rows=TRUE, cols=c("red", "blue", "green3"),  main="", show.names=TRUE){
-  #req(length(mod.list) > 0 )
-  
-  #try(nrow(meta) == ncol(exp))
+bio_mods <- function(exp, mod.list, meta, mean.var,cluster.rows=TRUE, cols=NULL,  main="", show.names=TRUE, mean.subjects=TRUE){
+
   mod.names <- names(mod.list)
 
   all.genes <- as.character(unlist(mod.list))
@@ -30,7 +30,6 @@ bio_mods <- function(exp, mod.list, meta, mean.var,cluster.rows=TRUE, cols=c("re
   
   exp.sub <- exp.sub[rowSums(is.na(exp.sub)) != ncol(exp.sub),   ]
 
-  # ungraded has been removed, to reintroduce see version 6.3
   exp.sub <- t(scale(t(exp.sub)))
   split <- split[rowSums(is.na(exp.sub)) != ncol(exp.sub)]
   exp.sub <- exp.sub[rowSums(is.na(exp.sub)) != ncol(exp.sub),   ]
@@ -69,15 +68,23 @@ bio_mods <- function(exp, mod.list, meta, mean.var,cluster.rows=TRUE, cols=c("re
   
 
   mean.list = lapply(1:length(unique(meta[, mean.var])),  function(x) x=data.frame())
-  names(mean.list) = unique(meta[, mean.var])
+  names(mean.list) = c(as.character(unique(meta[, mean.var])))#, paste(unique(meta[, mean.var]), "mean"))
   
   for(m in mod.names){
     for(i in unique(meta[, mean.var])){
-      mean.list[[i]] <- rbind(  mean.list[[i]], t(data.frame(colMeans(r.list[[i]][split == m, ], na.rm=TRUE))))
-    
-      rownames(mean.list[[i]])[nrow(mean.list[[i]])] <- paste(m, "mean Z-score")
+      temp <- rbind(mean.list[[i]], t(data.frame(colMeans(r.list[[i]][split == m, ], na.rm=TRUE))))
+      rownames(temp)[nrow(temp)] <- paste(m, "mean Z-score")
+      
+      if(mean.subjects == TRUE) {
+        temp = rbind(temp, rep(mean(as.numeric(temp[paste(m, "mean Z-score"),]), na.rm=T), ncol(temp)))
+        rownames(temp)[nrow(temp)] <- paste(m, "mean over subjects")
+      }
+      mean.list[[i]] <- temp 
+      mean.list[[i]] <- mean.list[[i]][c(which(grepl("over subjects", rownames(mean.list[[i]]))),  
+                                         which(! grepl("over subjects", rownames(mean.list[[i]])))), ]
     }
   }
+  
   
   ht_list = NULL #ComplexHeatmap::Heatmap(rbind(r.list[[1]], mean.list[[1]]))  ## Heatmap(...) + NULL gives you a HeatmapList object
   
