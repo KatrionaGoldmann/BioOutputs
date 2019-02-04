@@ -62,17 +62,6 @@ required packages.
     install.packages("devtools")
     library("devtools")
 
-    ## Warning: package 'cowplot' was built under R version 3.5.2
-
-    ## Loading required package: ggplot2
-
-    ## 
-    ## Attaching package: 'cowplot'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     ggsave
-
 Now install the BioOutputs package.
 
     install_github("KatrionaGoldmann/BioOutputs")
@@ -198,8 +187,6 @@ So we can use the classic example with the *mtcars* data frames:
 </table>
 
     bio_corr(mtcars, "qsec", "wt")
-
-    ## Loading required package: bitops
 
 ![](README_files/figure-markdown_strict/bio_corr-1.png)
 
@@ -363,9 +350,6 @@ This function splits expression data into customisable modules and
 averages over catagories in a given variable. In this example we will
 look at two Li modules and a custom one I made up.
 
-    ## Warning: namespace 'DOSE' is not available and has been replaced
-    ## by .GlobalEnv when processing object '.DOSEEnv'
-
     exp = rld.syn
     meta <- rld.metadata.syn
     mean.var = "Pathotype"
@@ -390,19 +374,5 @@ bio\_treatmentGroups
     id.col="id"
     df <- df[df$time < 150, ]
     bio_treatmentGroups(df, group.col="status", y.col="frail", x.col="time")
-
-    ## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl =
-    ## control$checkConv, : Model failed to converge with max|grad| = 0.24405 (tol
-    ## = 0.002, component 1)
-
-    ## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, : Model is nearly unidentifiable: very large eigenvalue
-    ##  - Rescale variables?
-
-    ## Warning in as_lmerModLT(model, devfun): Model may not have converged with 1
-    ## eigenvalue close to zero: 6.1e-11
-
-    ## Warning in qt(conf.interval/2 + 0.5, datac$N - 1): NaNs produced
-
-    ## Warning: Removed 41 rows containing missing values (geom_errorbar).
 
 ![](README_files/figure-markdown_strict/unnamed-chunk-11-1.png)
