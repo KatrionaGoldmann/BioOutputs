@@ -2,6 +2,7 @@
     -   [Gallery](#gallery)
     -   [Required packages](#required-packages)
     -   [Install Package](#install-package)
+-   [BioOutput Functions](#biooutput-functions)
     -   [bio\_corr](#bio_corr)
     -   [bio\_frequency](#bio_frequency)
     -   [bio\_volcano](#bio_volcano)
@@ -68,6 +69,9 @@ Now install the BioOutputs package.
     library("BioOutputs")
 
 ------------------------------------------------------------------------
+
+BioOutput Functions
+===================
 
 <a id="corrp"></a>
 
