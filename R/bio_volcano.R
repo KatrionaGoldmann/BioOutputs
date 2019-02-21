@@ -73,8 +73,7 @@ bio_volcano<- function(toptable, fc.col="log2FC", padj.col=NULL, padj.method="fd
 	}
 	
 	if(! is.null(label.p.cutoff)){
-		plot <- plot + geom_text_repel(data=toptable[toptable$padj < label.p.cutoff, ], 
-																	 aes(label= rownames(toptable)[toptable$padj < label.p.cutoff] ), size=2, vjust=0.5, hjust = -0.2) 
+		plot <- plot + geom_text_repel(data=toptable[toptable$padj < label.p.cutoff, ], aes(label= rownames(toptable)[toptable$padj < label.p.cutoff] ), size=2, vjust=0.5, hjust = -0.2, color=label.colour) 
 	}
 	
 	plot
