@@ -8,6 +8,7 @@ output:
 
 -----
 
+
 # BioOutputs
 
 This package contains common R scripts I use in my day to day data analysis of biological data. The scripts are primarily for plotting and visualisation, with some data organisation thrown in as well. 
@@ -28,10 +29,15 @@ cat('<table border="1">
     <td align="center" style="vertical-align:top" height="200"><a href="#corrp">Correlation Plot</a><img src=',plots[2],' height="150" width="330"/></td>
     <td style="vertical-align:top" align="center" height="200"><a href="#freq">Frequency Table</a><img src=',plots[3],' height="50" width="330"/></td>
   </tr>
-<tr>
+	<tr>
     <td align="center" style="vertical-align:top" height="200"><a href="#mods">Module Plot</a><img src=',plots[4],' height="150" width="330"/></td>
     <td align="center" style="vertical-align:top" height="200"><a href="#tgcomp">Treatment Group Comparisons</a><img src=',plots[5],' height="150" width="330"/></td>
     <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[6],' height="150" width="330"/></td>
+  </tr>
+ 	<tr>
+		<td align="center" style="vertical-align:top" height="200"><a href="#geneids">Switching Gene Ids</a></td>
+		<td align="center" style="vertical-align:top" height="200"></td>
+    <td align="center" style="vertical-align:top" height="200"></td>
   </tr>
 </table>')
 
@@ -50,6 +56,7 @@ cat('<table border="1">
   [`ggpubr`](https://cran.r-project.org/web/packages/ggpubr/index.html)
   [`grid`](https://www.rdocumentation.org/packages/grid/versions/3.5.2)
   [`pBrackets`](https://cran.r-project.org/web/packages/pBrackets/index.html)
+  [`biomaRt`](https://bioconductor.org/packages/release/bioc/html/biomaRt.html)
 
 
 -----
@@ -68,22 +75,33 @@ library(knitr)
 library(cowplot)
 ```
 
+```{r}
+library(devtools)
+library(knitr)
+```
+
 Now install the BioOutputs package.
 ```{r, eval=FALSE}
 install_github("KatrionaGoldmann/BioOutputs")
 library("BioOutputs")
 ```
 
+```{r, echo=FALSE}
+library(BioOutputs)
+```
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
 library("devtools")
 library(roxygen2)
 
-#Initialize the package
-setwd("~/Documents/Git/")
+#Initialize the package (laptop)
+# package.name="BioOutputs"
+# setwd(paste("~/Documents/Git/", package.name, sep=""))
 
-# Load/update the package
+
+# Load/update the package (desktop)
 package.name="BioOutputs"
-setwd(paste("~/Documents/Git/", package.name, sep=""))
+setwd(paste("~/Documents/Scripts/Git/", package.name, sep=""))
 document()
 ```
 
@@ -92,6 +110,7 @@ document()
 <a id="corrp"></a>
 
 ## bio_corr 
+
 
 Create a correlation plot. Taken from kassambara/ggpubr just changed the default arguments. 
 
@@ -108,6 +127,7 @@ bio_corr(mtcars, "qsec", "wt")
 -----
 
 <a id="freq"></a>
+
 
 ## bio_frequency
 
@@ -137,7 +157,9 @@ kable(bio_frequency(mtcars, "gear", remove.vars=c("5")))
 
 -----
 
+
 <a id="volc"></a>
+
 
 ## bio_volcano
 
@@ -176,6 +198,33 @@ rownames(toptable) = toptable$Gene
 bio_volcano(toptable, fc.col="log2FoldChange", label.row.indices=1:10, main="ALS patients carrying the C9ORF72", add.lines=TRUE)
 ```
 
+Lets look at the leukemia data set
+
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
+BiocManager::install("leukemiasEset", version = "3.8")
+```
+
+```{r, message=FALSE, warning=FALSE}
+library(leukemiasEset)
+library(limma)
+```
+
+```{r, message=FALSE, warning=FALSE}
+data(leukemiasEset)
+ourData <- leukemiasEset[, leukemiasEset$LeukemiaType %in% c("ALL", "NoL")]
+ourData$LeukemiaType <- factor(ourData$LeukemiaType)
+
+design <- model.matrix(~ ourData$LeukemiaType)
+fit <- lmFit(ourData, design)
+fit <- eBayes(fit)
+toptable <- topTable(fit)
+toptable$pvalue = toptable$P.Value
+```
+
+```{r}
+bio_volcano(toptable, fc.col="logFC", label.row.indices=1:10, main="leukemia", add.lines=FALSE)
+```
+
 
 -----
 
@@ -200,8 +249,10 @@ bio_bires(x="time", y="temp", df.data, x.plane="time", y.plane="temp", df.plane)
 This function splits expression data into customisable modules and averages over catagories in a given variable. In this example we will look at two Li modules and a custom one I made up. 
 
 ```{r, echo=FALSE}
-load("/Users/phd/Downloads/Complete_web_data_rld.rdata")
-cos.mods <- readRDS("/Users/PhD/Downloads/Module_list_KG.rds")
+#load("/Users/phd/Downloads/Complete_web_data_rld.rdata")
+load("~/V:/Katriona/ShinyDocker/CurrentWebsite/DIY/Complete_web_data_rld.rdata")
+#cos.mods <- readRDS("/Users/PhD/Downloads/Module_list_KG.rds")
+cos.mods <- readRDS("~/V:/Katriona/PEAC_analysis/GeneSets/Module_list_KG.rds")
 
 mod_list <- all.mod.list[c("M3", "M47.0", "M156.0")]
 mod_list[["custom MS4A1"]] <- as.character(cos.mods$gene[cos.mods$group == "MS4A1"])
@@ -212,25 +263,29 @@ names(mod_list) = c(paste("mod", 1:4))
 ```{r mods}
 exp = rld.syn
 meta <- rld.metadata.syn
-mean.var = "Pathotype"
-cols = NULL
-cluster.rows=FALSE
-bio_mods(exp=exp, mod.list=mod_list, meta=meta, mean.var = "Pathotype", show.names=TRUE, cluster.rows=FALSE)
+
+bio_mods(exp=exp, mod.list=mod_list, meta=meta, mean.var = "Pathotype", cluster.rows = FALSE)
 ```
 
 <a id="tgcomp"></a>
 
 ## bio_treatmentGroups
 
-```{r}
+```{r, warning=FALSE}
 library(survival)
 data(kidney)
 
 df <- kidney
-y.col="frail"
-group.col="status"
-x.col="time"
-id.col="id"
 df <- df[df$time < 150, ]
+
 bio_treatmentGroups(df, group.col="status", y.col="frail", x.col="time")
+```
+
+<a id="geneids"></a>
+
+## bio_geneid
+
+```{r}
+IDs = c("TNF", "A1BG")
+kable(bio_geneid(IDs, IDFrom='hgnc_symbol', IDTo = 'ensembl_transcript_id'))
 ```
