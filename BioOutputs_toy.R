@@ -16,6 +16,8 @@ package.name="BioOutputs"
 setwd(paste("~/Documents/Scripts/Git/", package.name, sep=""))
 document()
 
+?bio_geneid
+
 # Examples
 ?bio_frequency
 

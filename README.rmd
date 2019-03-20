@@ -27,16 +27,16 @@ cat('<table border="1">
   <tr>
     <td align="center" style="vertical-align:top" height="200"><a href="#bires">Bi-Results</a><img src=',plots[1],' height="150" width="330"/></td>
     <td align="center" style="vertical-align:top" height="200"><a href="#corrp">Correlation Plot</a><img src=',plots[2],' height="150" width="330"/></td>
-    <td style="vertical-align:top" align="center" height="200"><a href="#freq">Frequency Table</a><img src=',plots[3],' height="50" width="330"/></td>
+    <td style="vertical-align:top" align="center" height="200"><a href="#freq">Frequency Table</a><img src=',plots[4],' height="50" width="330"/></td>
   </tr>
 	<tr>
-    <td align="center" style="vertical-align:top" height="200"><a href="#mods">Module Plot</a><img src=',plots[4],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#tgcomp">Treatment Group Comparisons</a><img src=',plots[5],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[6],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#mods">Module Plot</a><img src=',plots[5],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#tgcomp">Treatment Group Comparisons</a><img src=',plots[6],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[7],' height="150" width="330"/></td>
   </tr>
  	<tr>
 		<td align="center" style="vertical-align:top" height="200"><a href="#geneids">Switching Gene Ids</a></td>
-		<td align="center" style="vertical-align:top" height="200"></td>
+		<td align="center" style="vertical-align:top" height="200"><a href="#fcp">Fold Change Heatmap</a><img src=',plots[3],' height="150" width="330"/></td>
     <td align="center" style="vertical-align:top" height="200"></td>
   </tr>
 </table>')
@@ -90,7 +90,7 @@ library("BioOutputs")
 library(BioOutputs)
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide'}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide', eval=FALSE}
 library("devtools")
 library(roxygen2)
 
@@ -288,4 +288,16 @@ bio_treatmentGroups(df, group.col="status", y.col="frail", x.col="time")
 ```{r}
 IDs = c("TNF", "A1BG")
 kable(bio_geneid(IDs, IDFrom='hgnc_symbol', IDTo = 'ensembl_transcript_id'))
+```
+
+
+<a id="fcp"></a>
+
+## bio_fc_heatmap
+
+```{r}
+exp = rld.syn
+meta <- rld.metadata.syn
+
+bio_fc_heatmap(exp=exp, var=meta$Pathtye)
 ```
