@@ -1,0 +1,9 @@
+*/Data/*
+*/Figures/*
+*DS_Store*
+*.rdata
+*.Rdata
+*.RData
+Thumbs.db
+*/Old/*
+BioOutputs_toy.R
