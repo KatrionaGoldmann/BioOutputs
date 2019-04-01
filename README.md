@@ -1,15 +1,3 @@
--   [BioOutputs](#biooutputs)
-    -   [Gallery](#gallery)
-    -   [Required packages](#required-packages)
-    -   [Install Package](#install-package)
-    -   [bio\_corr](#bio_corr)
-    -   [bio\_frequency](#bio_frequency)
-    -   [bio\_volcano](#bio_volcano)
-    -   [bio\_bires](#bio_bires)
-    -   [bio\_mods](#bio_mods)
-    -   [bio\_treatmentGroups](#bio_treatmentgroups)
-    -   [bio\_geneid](#bio_geneid)
-
 ------------------------------------------------------------------------
 
 BioOutputs
@@ -37,8 +25,8 @@ Gallery
   </tr>
     <tr>
         <td align="center" style="vertical-align:top" height="200"><a href="#geneids">Switching Gene Ids</a></td>
-        <td align="center" style="vertical-align:top" height="200"></td>
-    <td align="center" style="vertical-align:top" height="200"></td>
+        <td align="center" style="vertical-align:top" height="200"><a href="#fcp">Fold Change Heatmap</a><img src= ./figs/bio_fcp.png  height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#boxp">Significance Boxplots</a><img src= ./figs/bio_sigbox.png  height="150" width="330"/></td>
   </tr>
 </table>
 
@@ -54,6 +42,7 @@ Required packages
 [`RColorBrewer`](https://www.rdocumentation.org/packages/RColorBrewer/versions/1.1-2/topics/RColorBrewer)
 [`Rmisc`](https://www.rdocumentation.org/packages/Rmisc/versions/1.5)
 [`ggpubr`](https://cran.r-project.org/web/packages/ggpubr/index.html)
+[`gtools`](https://cran.r-project.org/web/packages/gtools/index.html)
 [`grid`](https://www.rdocumentation.org/packages/grid/versions/3.5.2)
 [`pBrackets`](https://cran.r-project.org/web/packages/pBrackets/index.html)
 [`biomaRt`](https://bioconductor.org/packages/release/bioc/html/biomaRt.html)
@@ -68,15 +57,6 @@ required packages.
 
     install.packages("devtools")
     library("devtools")
-
-    ## Loading required package: ggplot2
-
-    ## 
-    ## Attaching package: 'cowplot'
-
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     ggsave
 
     library(devtools)
     library(knitr)
@@ -207,8 +187,6 @@ So we can use the classic example with the *mtcars* data frames:
 
     bio_corr(mtcars, "qsec", "wt")
 
-    ## Loading required package: bitops
-
 ![](README_files/figure-markdown_strict/bio_corr-1.png)
 
 ------------------------------------------------------------------------
@@ -317,6 +295,81 @@ bio\_volcano
 This function generates a volcano plot from a top table using ggplot.
 The function contains many parameters, use `?bio_volcano` to interogate.
 
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 73%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>toptable</td>
+<td>A data frame containing p value and fold change columns for parameters compared across multiple groups. The p value column should be named “pvalue”.</td>
+</tr>
+<tr class="even">
+<td>fc.col</td>
+<td>The column name which stores the fold change. Should be in the log2 format (default=“log2FC”)</td>
+</tr>
+<tr class="odd">
+<td>padj.col</td>
+<td>The column which contains adjusted p-values. If NULL adjusted pvalues will be calculated</td>
+</tr>
+<tr class="even">
+<td>padj.method</td>
+<td>correction method. Options include: c(“holm”, “hochberg”, “hommel”, “bonferroni”, “BH”, “BY”, “fdr”, “none”). Default=&quot;fdr</td>
+</tr>
+<tr class="odd">
+<td>padj.cutoff</td>
+<td>The cutoff for adjusted pvalues. This adds a horizontal line of significance (default=NULL)</td>
+</tr>
+<tr class="even">
+<td>fc.cutoff</td>
+<td>The log2(fold change) significance cut-off (default=1)</td>
+</tr>
+<tr class="odd">
+<td>marker.colour</td>
+<td>Character vector of four colours to map to the volcano plot. In the order non-significanct, fold-change significant, pvalue significant, significant in fold-change and pvalues (default=c(“grey60”, “olivedrab”, “salmon”, “darkturquoise”))</td>
+</tr>
+<tr class="even">
+<td>label.p.cutoff</td>
+<td>The cutoff for adjusted pvalues for labelling (default=NULL). Not recommended if many significant rows.</td>
+</tr>
+<tr class="odd">
+<td>label.row.indices</td>
+<td>Indices of rows to be labelled (default=NULL)</td>
+</tr>
+<tr class="even">
+<td>label.colour</td>
+<td>Colour of labels (default=“black”)</td>
+</tr>
+<tr class="odd">
+<td>legend.labs</td>
+<td>A character vector for theThe legend label names (default=c(“Not Significant”, “FC&gt;fc.cutoff”, “Padj&lt;padj.cutoff”, “FC&gt;fc.cutoff&amp; Padj&lt;padj.cutoff”))</td>
+</tr>
+<tr class="even">
+<td>add.lines</td>
+<td>Whether to add dashed lines at fc.cutoff and padj.cutoff (default=TRUE)</td>
+</tr>
+<tr class="odd">
+<td>line.colour</td>
+<td>The color of dashed significance lines (default=“grey14”)</td>
+</tr>
+<tr class="even">
+<td>main</td>
+<td>Plot title</td>
+</tr>
+<tr class="odd">
+<td>xlims, ylims</td>
+<td>The plot limits</td>
+</tr>
+</tbody>
+</table>
+
 Lets look at the ALS patients carrying the C9ORF72 data set
 
 <!-- ```{r, message=FALSE, warning=FALSE, eval=FALSE} -->
@@ -375,6 +428,67 @@ This function colours data according to whether it is below or above a
 defined plane. The plane is plotted as a line and data can be output as
 either a line or markers/points.
 
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 73%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>x</td>
+<td>x column name in data</td>
+</tr>
+<tr class="even">
+<td>y</td>
+<td>y column name in data</td>
+</tr>
+<tr class="odd">
+<td>df.data</td>
+<td>Data frame containing x and y columns</td>
+</tr>
+<tr class="even">
+<td>x.plane</td>
+<td>column name for the x axis in df.plane</td>
+</tr>
+<tr class="odd">
+<td>y.plane</td>
+<td>column name for the y axis in df.plane</td>
+</tr>
+<tr class="even">
+<td>df.plane</td>
+<td>Date frame modelling the plane</td>
+</tr>
+<tr class="odd">
+<td>stepwise</td>
+<td>logical whether to plot the cutoff plane as stepwise or smoothed</td>
+</tr>
+<tr class="even">
+<td>colours</td>
+<td>colour vector for higher, lower and plane values (default=c(“green”, “red”, &quot;grey) respectively)</td>
+</tr>
+<tr class="odd">
+<td>inc.equal</td>
+<td>logical whethere points on the line should be counted as above (dafault=TRUE)</td>
+</tr>
+<tr class="even">
+<td>labels</td>
+<td>label for the markers (default=c(“above”, “below”))</td>
+</tr>
+<tr class="odd">
+<td>type</td>
+<td>type of plot for data (options include point (dafault), line, stepwise)</td>
+</tr>
+</tbody>
+</table>
+
+Lets look at some beaver temperature data.
+
     data(beavers)
     df.plane = beaver1
     df.data = beaver2
@@ -389,10 +503,61 @@ bio\_mods
 ---------
 
 This function splits expression data into customisable modules and
-averages over catagories in a given variable. In this example we will
-look at two Li modules and a custom one I made up.
+averages over catagories in a given variable.
 
-    ## 
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 73%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>exp</td>
+<td>data frame containing the expression data</td>
+</tr>
+<tr class="even">
+<td>mod.list</td>
+<td>A list of modules. Each element contains the list of genes for a modules. The gene names must match the rownames in the exp dataframe.</td>
+</tr>
+<tr class="odd">
+<td>meta</td>
+<td>Dataframe where each column contains an annotation/tract for samples in the heatmap. The order of samples in meta must match that of exp.</td>
+</tr>
+<tr class="even">
+<td>cluster.rows</td>
+<td>The method to use for clustering of rows</td>
+</tr>
+<tr class="odd">
+<td>cols</td>
+<td>Chacter vector, or named vector to fix the order, defining the colours of each mean.var group.</td>
+</tr>
+<tr class="even">
+<td>main</td>
+<td>Title of heatmap</td>
+</tr>
+<tr class="odd">
+<td>show.names</td>
+<td>Show row names. Logical.</td>
+</tr>
+<tr class="even">
+<td>mean.subjects</td>
+<td>Logical to determine whether to add a row for the mean value for all subjects in a group</td>
+</tr>
+<tr class="odd">
+<td>split.var</td>
+<td>Character defining the meta column to average (mean) over.</td>
+</tr>
+</tbody>
+</table>
+
+In this example we will look at two Li modules and a custom one I made
+up.
 
     exp = rld.syn
     meta <- rld.metadata.syn
@@ -405,6 +570,55 @@ look at two Li modules and a custom one I made up.
 
 bio\_treatmentGroups
 --------------------
+
+This function plots a line graph comparing two treatment groups over
+time.
+
+<table>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df</td>
+<td>Data frame containing the data for both groups</td>
+</tr>
+<tr class="even">
+<td>group.col</td>
+<td>Column name which corresponding to the group of values in df</td>
+</tr>
+<tr class="odd">
+<td>y.col</td>
+<td>Column name corresponding to the y-axis values in df</td>
+</tr>
+<tr class="even">
+<td>x.col</td>
+<td>Column name corresponding to the x-axis values in df</td>
+</tr>
+<tr class="odd">
+<td>id.col</td>
+<td>Column name which corresponds to subject ID</td>
+</tr>
+<tr class="even">
+<td>main</td>
+<td>Title of pot</td>
+</tr>
+<tr class="odd">
+<td>cols</td>
+<td>Character vector for colours of lines</td>
+</tr>
+<tr class="even">
+<td>p.col</td>
+<td>Colour of p-value text</td>
+</tr>
+</tbody>
+</table>
+
+Lets look at kidney disease survival in this example from the survival
+package.
 
     library(survival)
     data(kidney)
@@ -420,6 +634,49 @@ bio\_treatmentGroups
 
 bio\_geneid
 -----------
+
+This function switches gene (or snp) ids using biomart
+
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 73%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>IDs</td>
+<td>list of the Ids you want to convert</td>
+</tr>
+<tr class="even">
+<td>IDFrom</td>
+<td>What format these IDs are in (default Ensembl)</td>
+</tr>
+<tr class="odd">
+<td>IDTo</td>
+<td>What format you want the IDs converted to (default gene names)</td>
+</tr>
+<tr class="even">
+<td>mart</td>
+<td>The biomart to use. Typically, for humans you will want ensembl (default). Alternatives can be found at listEnsembl()</td>
+</tr>
+<tr class="odd">
+<td>dataset</td>
+<td>you want to use. To see the different datasets available within a biomaRt you can e.g. do: mart = useEnsembl(‘ENSEMBL_MART_ENSEMBL’), followed by listDatasets(mart).</td>
+</tr>
+<tr class="even">
+<td>attributes</td>
+<td>list of variables you want output</td>
+</tr>
+</tbody>
+</table>
+
+For example genes TNF and A1BG:
 
     IDs = c("TNF", "A1BG")
     kable(bio_geneid(IDs, IDFrom='hgnc_symbol', IDTo = 'ensembl_transcript_id'))
@@ -528,3 +785,115 @@ bio\_geneid
 </tr>
 </tbody>
 </table>
+
+<a id="fcp"></a>
+
+bio\_fc\_heatmap
+----------------
+
+This function exports a complex heatmap looking at the expression of
+different modules which can be customised.
+
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 73%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>exp</td>
+<td>Expression Data</td>
+</tr>
+<tr class="even">
+<td>var</td>
+<td>Vector classing samples by variables</td>
+</tr>
+<tr class="odd">
+<td>prefix</td>
+<td>Prefix to Heatmap titles</td>
+</tr>
+<tr class="even">
+<td>stars</td>
+<td>whether pvales should be written as numeric or start (default=FALSE)</td>
+</tr>
+<tr class="odd">
+<td>overlay</td>
+<td>pvalues on fold change Heatmap or besidde (default = TRUE)</td>
+</tr>
+<tr class="even">
+<td>logp</td>
+<td>Whether or not to log the pvalues</td>
+</tr>
+<tr class="odd">
+<td>…</td>
+<td>Other parameters to pass to Complex Heatmap</td>
+</tr>
+</tbody>
+</table>
+
+    exp = rld.syn
+    meta <- rld.metadata.syn
+
+    bio_fc_heatmap(exp=exp, var=meta$Pathotype)
+
+<a id="boxp"></a>
+
+bio\_boxplots
+-------------
+
+Creates boxplots showing the significance between groups.
+
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 73%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>data</td>
+<td>Data frame containing columns x and y</td>
+</tr>
+<tr class="even">
+<td>x, y</td>
+<td>x and y variable names for drawing.</td>
+</tr>
+<tr class="odd">
+<td>p.cutoff</td>
+<td>plot p-value if above p.cutoff threshold. To include all comparisons set as NULL.</td>
+</tr>
+<tr class="even">
+<td>stars</td>
+<td>Logical. Whether significance shown as numeric or stars</td>
+</tr>
+<tr class="odd">
+<td>method</td>
+<td>a character string indicating which method to be used for comparing means.c(“t.test”, “wilcox.test”)</td>
+</tr>
+<tr class="even">
+<td>star.vals</td>
+<td>a list of arguments to pass to the function symnum for symbolic number coding of p-values. For example, the dafault is symnum.args &lt;- list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, 1), symbols = c(‘****’, ‘<em><strong>’, ’</strong>’, ’</em>’, ‘ns’)). In other words, we use the following convention for symbols indicating statistical significance: ns: p &gt; 0.05; <em>: p &lt;= 0.05; <strong>: p &lt;= 0.01; </strong></em>: p &lt;= 0.001; ****: p &lt;= 0.0001</td>
+</tr>
+</tbody>
+</table>
+
+Lets look at the iris data:
+
+    bio_boxplots(iris, x="Species", y= "Sepal.Width", p.cutoff = 0.0001)
+
+![](README_files/figure-markdown_strict/unnamed-chunk-20-1.png)
+
+    bio_boxplots(iris, x="Species", y= "Sepal.Width", NULL, stars=TRUE)
+
+![](README_files/figure-markdown_strict/unnamed-chunk-20-2.png)

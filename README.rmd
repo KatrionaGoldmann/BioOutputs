@@ -3,11 +3,14 @@ title: "BioOutputs"
 output:
   md_document:
     md_extensions: -markdown_in_html_blocks
-    toc: yes
 ---
 
 -----
 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE, eval=TRUE)
+```
 
 # BioOutputs
 
@@ -31,13 +34,13 @@ cat('<table border="1">
   </tr>
 	<tr>
     <td align="center" style="vertical-align:top" height="200"><a href="#mods">Module Plot</a><img src=',plots[5],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#tgcomp">Treatment Group Comparisons</a><img src=',plots[6],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[7],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#tgcomp">Treatment Group Comparisons</a><img src=',plots[7],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[8],' height="150" width="330"/></td>
   </tr>
  	<tr>
 		<td align="center" style="vertical-align:top" height="200"><a href="#geneids">Switching Gene Ids</a></td>
 		<td align="center" style="vertical-align:top" height="200"><a href="#fcp">Fold Change Heatmap</a><img src=',plots[3],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#boxp">Significance Boxplots</a><img src=',plots[6],' height="150" width="330"/></td>
   </tr>
 </table>')
 
@@ -54,6 +57,7 @@ cat('<table border="1">
   [`RColorBrewer`](https://www.rdocumentation.org/packages/RColorBrewer/versions/1.1-2/topics/RColorBrewer)
   [`Rmisc`](https://www.rdocumentation.org/packages/Rmisc/versions/1.5)
   [`ggpubr`](https://cran.r-project.org/web/packages/ggpubr/index.html)
+  [`gtools`](https://cran.r-project.org/web/packages/gtools/index.html)
   [`grid`](https://www.rdocumentation.org/packages/grid/versions/3.5.2)
   [`pBrackets`](https://cran.r-project.org/web/packages/pBrackets/index.html)
   [`biomaRt`](https://bioconductor.org/packages/release/bioc/html/biomaRt.html)
@@ -86,22 +90,20 @@ install_github("KatrionaGoldmann/BioOutputs")
 library("BioOutputs")
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 library(BioOutputs)
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide', eval=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide', eval=TRUE}
 library("devtools")
 library(roxygen2)
 
-#Initialize the package (laptop)
-# package.name="BioOutputs"
-# setwd(paste("~/Documents/Git/", package.name, sep=""))
-
-
-# Load/update the package (desktop)
 package.name="BioOutputs"
+# Load/update the package (desktop)
 setwd(paste("~/Documents/Scripts/Git/", package.name, sep=""))
+#Initialize the package (laptop)
+#setwd(paste("~/Documents/Git/", package.name, sep=""))
+
 document()
 ```
 
@@ -164,6 +166,26 @@ kable(bio_frequency(mtcars, "gear", remove.vars=c("5")))
 ## bio_volcano
 
 This function generates a volcano plot from a top table using ggplot. The function contains many parameters, use `?bio_volcano` to interogate. 
+
+Argument           | 
+-------------------|----------------------------------------------------
+toptable        | A data frame containing p value and fold change columns for parameters compared across multiple groups. The p value column should be named "pvalue".  
+fc.col           | The column name which stores the fold change. Should be in the log2 format (default="log2FC")
+padj.col     | The column which contains adjusted p-values. If NULL adjusted pvalues will be calculated 
+padj.method	         | correction method. Options include: c("holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"). Default="fdr
+padj.cutoff         | The cutoff for adjusted pvalues. This adds a horizontal line of significance (default=NULL)
+fc.cutoff         | The log2(fold change) significance cut-off (default=1)
+marker.colour         | Character vector of four colours to map to the volcano plot. In the order non-significanct, fold-change significant, pvalue significant, significant in fold-change and pvalues (default=c("grey60", "olivedrab", "salmon", "darkturquoise"))
+label.p.cutoff         | The cutoff for adjusted pvalues for labelling (default=NULL). Not recommended if many significant rows.
+label.row.indices         | Indices of rows to be labelled (default=NULL)
+label.colour         | Colour of labels (default="black")
+legend.labs         | A character vector for theThe legend label names (default=c("Not Significant", "FC>fc.cutoff", "Padj<padj.cutoff", "FC>fc.cutoff& Padj<padj.cutoff"))
+add.lines         | Whether to add dashed lines at fc.cutoff and padj.cutoff (default=TRUE)
+line.colour         | The color of dashed significance lines (default="grey14")
+main         | Plot title
+xlims, ylims         | The plot limits
+
+
 
 Lets look at the ALS patients carrying the C9ORF72 data set
 
@@ -234,6 +256,24 @@ bio_volcano(toptable, fc.col="logFC", label.row.indices=1:10, main="leukemia", a
 
 This function colours data according to whether it is below or above a defined plane. The plane is plotted as a line and data can be output as either a line or markers/points. 
 
+Argument           | 
+-------------------|----------------------------------------------------
+x         | x column name in data
+y         | y column name in data
+df.data         | Data frame containing x and y columns
+x.plane         | column name for the x axis in df.plane
+y.plane         | column name for the y axis in df.plane
+df.plane         | Date frame modelling the plane
+stepwise         | logical whether to plot the cutoff plane as stepwise or smoothed
+colours         | colour vector for higher, lower and plane values (default=c("green", "red", "grey) respectively)
+inc.equal         | logical whethere points on the line should be counted as above (dafault=TRUE)
+labels         | label for the markers (default=c("above", "below"))
+type         | type of plot for data (options include point (dafault), line, stepwise)
+
+
+Lets look at some beaver temperature data. 
+
+
 ```{r bires}
 data(beavers)
 df.plane = beaver1
@@ -246,9 +286,24 @@ bio_bires(x="time", y="temp", df.data, x.plane="time", y.plane="temp", df.plane)
 
 ## bio_mods
 
-This function splits expression data into customisable modules and averages over catagories in a given variable. In this example we will look at two Li modules and a custom one I made up. 
+This function splits expression data into customisable modules and averages over catagories in a given variable. 
 
-```{r, echo=FALSE}
+Argument           | 
+-------------------|----------------------------------------------------
+exp         | data frame containing the expression data
+mod.list         | A list of modules. Each element contains the list of genes for a modules. The gene names must match the rownames in the exp dataframe.
+meta         | Dataframe where each column contains an annotation/tract for samples in the heatmap. The order of samples in meta must match that of exp.
+cluster.rows         | The method to use for clustering of rows
+cols         | Chacter vector, or named vector to fix the order, defining the colours of each mean.var group.
+main         | Title of heatmap
+show.names         | Show row names. Logical.
+mean.subjects         | Logical to determine whether to add a row for the mean value for all subjects in a group
+split.var         | Character defining the meta column to average (mean) over.
+
+
+In this example we will look at two Li modules and a custom one I made up. 
+
+```{r, echo=FALSE, eval=TRUE}
 #load("/Users/phd/Downloads/Complete_web_data_rld.rdata")
 load("~/V:/Katriona/ShinyDocker/CurrentWebsite/DIY/Complete_web_data_rld.rdata")
 #cos.mods <- readRDS("/Users/PhD/Downloads/Module_list_KG.rds")
@@ -260,7 +315,7 @@ mod_list[["custom MS4A1"]] <- as.character(cos.mods$gene[cos.mods$group == "MS4A
 names(mod_list) = c(paste("mod", 1:4))
 ```
 
-```{r mods}
+```{r mods, eval=TRUE}
 exp = rld.syn
 meta <- rld.metadata.syn
 
@@ -270,6 +325,21 @@ bio_mods(exp=exp, mod.list=mod_list, meta=meta, mean.var = "Pathotype", cluster.
 <a id="tgcomp"></a>
 
 ## bio_treatmentGroups
+
+This function plots a line graph comparing two treatment groups over time. 
+
+Argument           | 
+-------------------|----------------------------------------------------
+df         | Data frame containing the data for both groups
+group.col         | Column name which corresponding to the group of values in df
+y.col         | Column name corresponding to the y-axis values in df
+x.col         | Column name corresponding to the x-axis values in df
+id.col         | Column name which corresponds to subject ID
+main         | Title of pot
+cols         | Character vector for colours of lines
+p.col         | Colour of p-value text
+
+Lets look at kidney disease survival in this example from the survival package. 
 
 ```{r, warning=FALSE}
 library(survival)
@@ -285,6 +355,19 @@ bio_treatmentGroups(df, group.col="status", y.col="frail", x.col="time")
 
 ## bio_geneid
 
+This function switches gene (or snp) ids using biomart
+
+Argument           | 
+-------------------|----------------------------------------------------
+IDs         | list of the Ids you want to convert
+IDFrom         | What format these IDs are in (default Ensembl)
+IDTo         | What format you want the IDs converted to (default gene names)
+mart         | The biomart to use. Typically, for humans you will want ensembl (default). Alternatives can be found at listEnsembl()
+dataset         | you want to use. To see the different datasets available within a biomaRt you can e.g. do: mart = useEnsembl('ENSEMBL_MART_ENSEMBL'), followed by listDatasets(mart).
+attributes         | list of variables you want output
+
+For example genes TNF and A1BG:
+
 ```{r}
 IDs = c("TNF", "A1BG")
 kable(bio_geneid(IDs, IDFrom='hgnc_symbol', IDTo = 'ensembl_transcript_id'))
@@ -295,9 +378,45 @@ kable(bio_geneid(IDs, IDFrom='hgnc_symbol', IDTo = 'ensembl_transcript_id'))
 
 ## bio_fc_heatmap
 
-```{r}
+This function exports a complex heatmap looking at the expression of different modules which can be customised. 
+
+
+Argument           | 
+-------------------|----------------------------------------------------
+exp         | Expression Data
+var         | Vector classing samples by variables
+prefix         | Prefix to Heatmap titles
+stars         | whether pvales should be written as numeric or start (default=FALSE)
+overlay         | pvalues on fold change Heatmap or besidde (default = TRUE)
+logp         | Whether or not to log the pvalues
+...         | Other parameters to pass to Complex Heatmap
+
+```{r, eval=FALSE}
 exp = rld.syn
 meta <- rld.metadata.syn
 
-bio_fc_heatmap(exp=exp, var=meta$Pathtye)
+bio_fc_heatmap(exp=exp, var=meta$Pathotype)
+```
+
+
+<a id="boxp"></a>
+
+## bio_boxplots
+
+Creates boxplots showing the significance between groups.
+
+Argument           | 
+-------------------|----------------------------------------------------
+data         | Data frame containing columns x and y
+x, y         | x and y variable names for drawing.
+p.cutoff         | plot p-value if above p.cutoff threshold. To include all comparisons set as NULL.
+stars         | Logical. Whether significance shown as numeric or stars
+method         | a character string indicating which method to be used for comparing means.c("t.test", "wilcox.test")
+star.vals         | a list of arguments to pass to the function symnum for symbolic number coding of p-values. For example, the dafault is symnum.args <- list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, 1), symbols = c('****', '***', '**', '*', 'ns')). In other words, we use the following convention for symbols indicating statistical significance: ns: p > 0.05; *: p <= 0.05; **: p <= 0.01; ***: p <= 0.001; ****: p <= 0.0001
+
+Lets look at the iris data:
+
+```{r}
+bio_boxplots(iris, x="Species", y= "Sepal.Width", p.cutoff = 0.0001)
+bio_boxplots(iris, x="Species", y= "Sepal.Width", NULL, stars=TRUE)
 ```
