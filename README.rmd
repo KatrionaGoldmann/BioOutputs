@@ -31,13 +31,13 @@ cat('<table border="1">
   </tr>
 	<tr>
     <td align="center" style="vertical-align:top" height="200"><a href="#mods">Module Plot</a><img src=',plots[5],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#tgcomp">Treatment Group Comparisons</a><img src=',plots[6],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[7],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#tgcomp">Treatment Group Comparisons</a><img src=',plots[7],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[8],' height="150" width="330"/></td>
   </tr>
  	<tr>
 		<td align="center" style="vertical-align:top" height="200"><a href="#geneids">Switching Gene Ids</a></td>
 		<td align="center" style="vertical-align:top" height="200"><a href="#fcp">Fold Change Heatmap</a><img src=',plots[3],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#boxplots">Significance Boxplots</a><img src=',plots[6],' height="150" width="330"/></td>
   </tr>
 </table>')
 
@@ -86,22 +86,20 @@ install_github("KatrionaGoldmann/BioOutputs")
 library("BioOutputs")
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 library(BioOutputs)
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide', eval=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, results='hide', eval=TRUE}
 library("devtools")
 library(roxygen2)
 
-#Initialize the package (laptop)
-# package.name="BioOutputs"
-# setwd(paste("~/Documents/Git/", package.name, sep=""))
-
-
-# Load/update the package (desktop)
 package.name="BioOutputs"
-setwd(paste("~/Documents/Scripts/Git/", package.name, sep=""))
+# Load/update the package (desktop)
+#setwd(paste("~/Documents/Scripts/Git/", package.name, sep=""))
+#Initialize the package (laptop)
+setwd(paste("~/Documents/Git/", package.name, sep=""))
+
 document()
 ```
 
@@ -248,7 +246,7 @@ bio_bires(x="time", y="temp", df.data, x.plane="time", y.plane="temp", df.plane)
 
 This function splits expression data into customisable modules and averages over catagories in a given variable. In this example we will look at two Li modules and a custom one I made up. 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 #load("/Users/phd/Downloads/Complete_web_data_rld.rdata")
 load("~/V:/Katriona/ShinyDocker/CurrentWebsite/DIY/Complete_web_data_rld.rdata")
 #cos.mods <- readRDS("/Users/PhD/Downloads/Module_list_KG.rds")
@@ -260,7 +258,7 @@ mod_list[["custom MS4A1"]] <- as.character(cos.mods$gene[cos.mods$group == "MS4A
 names(mod_list) = c(paste("mod", 1:4))
 ```
 
-```{r mods}
+```{r mods, eval=FALSE}
 exp = rld.syn
 meta <- rld.metadata.syn
 
@@ -295,9 +293,18 @@ kable(bio_geneid(IDs, IDFrom='hgnc_symbol', IDTo = 'ensembl_transcript_id'))
 
 ## bio_fc_heatmap
 
-```{r}
+```{r, eval=FALSE}
 exp = rld.syn
 meta <- rld.metadata.syn
 
 bio_fc_heatmap(exp=exp, var=meta$Pathtye)
+```
+
+
+<a id="bxop"></a>
+
+## bio_boxplots
+```{r}
+bio_boxplots(iris, x="Species", y= "Sepal.Width", p.cutoff = 0.0001)
+bio_boxplots(iris, x="Species", y= "Sepal.Width", NULL, stars=TRUE)
 ```
