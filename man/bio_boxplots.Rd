@@ -8,7 +8,7 @@ bio_boxplots(data, x, y, p.cutoff = 0.5, stars = FALSE,
   method = "t.test", star.vals = NULL)
 }
 \arguments{
-\item{data}{}
+\item{data}{Data frame containing columns x and y}
 
 \item{x, y}{x and y variable names for drawing.}
 
@@ -18,7 +18,7 @@ bio_boxplots(data, x, y, p.cutoff = 0.5, stars = FALSE,
 
 \item{method}{a character string indicating which method to be used for comparing means.c("t.test", "wilcox.test")}
 
-\item{star.vals}{a list of arguments to pass to the function symnum for symbolic number coding of p-values. 
+\item{star.vals}{a list of arguments to pass to the function symnum for symbolic number coding of p-values.
 For example, the dafault is symnum.args <- list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, 1), symbols = c('****', '***', '**', '*', 'ns')).
 In other words, we use the following convention for symbols indicating statistical significance:
 ns: p > 0.05; *: p <= 0.05; **: p <= 0.01; ***: p <= 0.001; ****: p <= 0.0001}
