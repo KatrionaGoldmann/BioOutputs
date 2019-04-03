@@ -1,17 +1,3 @@
--   [BioOutputs](#biooutputs)
-    -   [Gallery](#gallery)
-    -   [Required packages](#required-packages)
-    -   [Install Package](#install-package)
-    -   [bio\_corr](#bio_corr)
-    -   [bio\_frequency](#bio_frequency)
-    -   [bio\_volcano](#bio_volcano)
-    -   [bio\_bires](#bio_bires)
-    -   [bio\_mods](#bio_mods)
-    -   [bio\_treatmentGroups](#bio_treatmentgroups)
-    -   [bio\_geneid](#bio_geneid)
-    -   [bio\_fc\_heatmap](#bio_fc_heatmap)
-    -   [bio\_boxplots](#bio_boxplots)
-
 ------------------------------------------------------------------------
 
 BioOutputs
@@ -41,6 +27,11 @@ Gallery
         <td align="center" style="vertical-align:top" height="200"><a href="#geneids">Switching Gene Ids</a></td>
         <td align="center" style="vertical-align:top" height="200"><a href="#fcp">Fold Change Heatmap</a><img src= ./figs/bio_fcp.png  height="150" width="330"/></td>
     <td align="center" style="vertical-align:top" height="200"><a href="#boxp">Significance Boxplots</a><img src= ./figs/bio_sigbox.png  height="150" width="330"/></td>
+  </tr>
+    <tr>
+        <td align="center" style="vertical-align:top" height="200"><a href="#geneids">Sankey Plots</a><img src= ./figs/bio_sankey.png  height="150" width="330"/></td>
+        <td align="center" style="vertical-align:top" height="200"></td>
+    <td align="center" style="vertical-align:top" height="200"></td>
   </tr>
 </table>
 
@@ -309,10 +300,10 @@ bio\_volcano
 This function generates a volcano plot from a top table using ggplot.
 The function contains many parameters, use `?bio_volcano` to interogate.
 
-<table>
+<table style="width:100%;">
 <colgroup>
-<col style="width: 26%" />
-<col style="width: 73%" />
+<col width="27%" />
+<col width="72%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -323,11 +314,11 @@ The function contains many parameters, use `?bio_volcano` to interogate.
 <tbody>
 <tr class="odd">
 <td>toptable</td>
-<td>A data frame containing p value and fold change columns for parameters compared across multiple groups. The p value column should be named “pvalue”.</td>
+<td>A data frame containing p value and fold change columns for parameters compared across multiple groups. The p value column should be named &quot;pvalue&quot;.</td>
 </tr>
 <tr class="even">
 <td>fc.col</td>
-<td>The column name which stores the fold change. Should be in the log2 format (default=“log2FC”)</td>
+<td>The column name which stores the fold change. Should be in the log2 format (default=&quot;log2FC&quot;)</td>
 </tr>
 <tr class="odd">
 <td>padj.col</td>
@@ -335,7 +326,7 @@ The function contains many parameters, use `?bio_volcano` to interogate.
 </tr>
 <tr class="even">
 <td>padj.method</td>
-<td>correction method. Options include: c(“holm”, “hochberg”, “hommel”, “bonferroni”, “BH”, “BY”, “fdr”, “none”). Default=&quot;fdr</td>
+<td>correction method. Options include: c(&quot;holm&quot;, &quot;hochberg&quot;, &quot;hommel&quot;, &quot;bonferroni&quot;, &quot;BH&quot;, &quot;BY&quot;, &quot;fdr&quot;, &quot;none&quot;). Default=&quot;fdr</td>
 </tr>
 <tr class="odd">
 <td>padj.cutoff</td>
@@ -347,7 +338,7 @@ The function contains many parameters, use `?bio_volcano` to interogate.
 </tr>
 <tr class="odd">
 <td>marker.colour</td>
-<td>Character vector of four colours to map to the volcano plot. In the order non-significanct, fold-change significant, pvalue significant, significant in fold-change and pvalues (default=c(“grey60”, “olivedrab”, “salmon”, “darkturquoise”))</td>
+<td>Character vector of four colours to map to the volcano plot. In the order non-significanct, fold-change significant, pvalue significant, significant in fold-change and pvalues (default=c(&quot;grey60&quot;, &quot;olivedrab&quot;, &quot;salmon&quot;, &quot;darkturquoise&quot;))</td>
 </tr>
 <tr class="even">
 <td>label.p.cutoff</td>
@@ -359,11 +350,11 @@ The function contains many parameters, use `?bio_volcano` to interogate.
 </tr>
 <tr class="even">
 <td>label.colour</td>
-<td>Colour of labels (default=“black”)</td>
+<td>Colour of labels (default=&quot;black&quot;)</td>
 </tr>
 <tr class="odd">
 <td>legend.labs</td>
-<td>A character vector for theThe legend label names (default=c(“Not Significant”, “FC&gt;fc.cutoff”, “Padj&lt;padj.cutoff”, “FC&gt;fc.cutoff&amp; Padj&lt;padj.cutoff”))</td>
+<td>A character vector for theThe legend label names (default=c(&quot;Not Significant&quot;, &quot;FC&gt;fc.cutoff&quot;, &quot;Padj&lt;padj.cutoff&quot;, &quot;FC&gt;fc.cutoff&amp; Padj&lt;padj.cutoff&quot;))</td>
 </tr>
 <tr class="even">
 <td>add.lines</td>
@@ -371,7 +362,7 @@ The function contains many parameters, use `?bio_volcano` to interogate.
 </tr>
 <tr class="odd">
 <td>line.colour</td>
-<td>The color of dashed significance lines (default=“grey14”)</td>
+<td>The color of dashed significance lines (default=&quot;grey14&quot;)</td>
 </tr>
 <tr class="even">
 <td>main</td>
@@ -442,10 +433,10 @@ This function colours data according to whether it is below or above a
 defined plane. The plane is plotted as a line and data can be output as
 either a line or markers/points.
 
-<table>
+<table style="width:100%;">
 <colgroup>
-<col style="width: 26%" />
-<col style="width: 73%" />
+<col width="27%" />
+<col width="72%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -484,7 +475,7 @@ either a line or markers/points.
 </tr>
 <tr class="even">
 <td>colours</td>
-<td>colour vector for higher, lower and plane values (default=c(“green”, “red”, &quot;grey) respectively)</td>
+<td>colour vector for higher, lower and plane values (default=c(&quot;green&quot;, &quot;red&quot;, &quot;grey) respectively)</td>
 </tr>
 <tr class="odd">
 <td>inc.equal</td>
@@ -492,7 +483,7 @@ either a line or markers/points.
 </tr>
 <tr class="even">
 <td>labels</td>
-<td>label for the markers (default=c(“above”, “below”))</td>
+<td>label for the markers (default=c(&quot;above&quot;, &quot;below&quot;))</td>
 </tr>
 <tr class="odd">
 <td>type</td>
@@ -519,10 +510,10 @@ bio\_mods
 This function splits expression data into customisable modules and
 averages over catagories in a given variable.
 
-<table>
+<table style="width:100%;">
 <colgroup>
-<col style="width: 26%" />
-<col style="width: 73%" />
+<col width="27%" />
+<col width="72%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -649,10 +640,10 @@ bio\_geneid
 
 This function switches gene (or snp) ids using biomart
 
-<table>
+<table style="width:100%;">
 <colgroup>
-<col style="width: 26%" />
-<col style="width: 73%" />
+<col width="27%" />
+<col width="72%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -679,7 +670,7 @@ This function switches gene (or snp) ids using biomart
 </tr>
 <tr class="odd">
 <td>dataset</td>
-<td>you want to use. To see the different datasets available within a biomaRt you can e.g. do: mart = useEnsembl(‘ENSEMBL_MART_ENSEMBL’), followed by listDatasets(mart).</td>
+<td>you want to use. To see the different datasets available within a biomaRt you can e.g. do: mart = useEnsembl('ENSEMBL_MART_ENSEMBL'), followed by listDatasets(mart).</td>
 </tr>
 <tr class="even">
 <td>attributes</td>
@@ -806,10 +797,10 @@ bio\_fc\_heatmap
 This function exports a complex heatmap looking at the expression of
 different modules which can be customised.
 
-<table>
+<table style="width:100%;">
 <colgroup>
-<col style="width: 26%" />
-<col style="width: 73%" />
+<col width="27%" />
+<col width="72%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -843,7 +834,7 @@ different modules which can be customised.
 <td>Whether or not to log the pvalues</td>
 </tr>
 <tr class="odd">
-<td>…</td>
+<td>...</td>
 <td>Other parameters to pass to Complex Heatmap</td>
 </tr>
 </tbody>
@@ -861,10 +852,10 @@ bio\_boxplots
 
 Creates boxplots showing the significance between groups.
 
-<table>
+<table style="width:100%;">
 <colgroup>
-<col style="width: 26%" />
-<col style="width: 73%" />
+<col width="27%" />
+<col width="72%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -891,11 +882,11 @@ Creates boxplots showing the significance between groups.
 </tr>
 <tr class="odd">
 <td>method</td>
-<td>a character string indicating which method to be used for comparing means.c(“t.test”, “wilcox.test”)</td>
+<td>a character string indicating which method to be used for comparing means.c(&quot;t.test&quot;, &quot;wilcox.test&quot;)</td>
 </tr>
 <tr class="even">
 <td>star.vals</td>
-<td>a list of arguments to pass to the function symnum for symbolic number coding of p-values. For example, the dafault is symnum.args &lt;- list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, 1), symbols = c(‘****’, ‘<em><strong>’, ’</strong>’, ’</em>’, ‘ns’)). In other words, we use the following convention for symbols indicating statistical significance: ns: p &gt; 0.05; <em>: p &lt;= 0.05; <strong>: p &lt;= 0.01; </strong></em>: p &lt;= 0.001; ****: p &lt;= 0.0001</td>
+<td>a list of arguments to pass to the function symnum for symbolic number coding of p-values. For example, the dafault is symnum.args &lt;- list(cutpoints = c(0, 0.0001, 0.001, 0.01, 0.05, 1), symbols = c('****', '<em><strong>', '</strong>', '</em>', 'ns')). In other words, we use the following convention for symbols indicating statistical significance: ns: p &gt; 0.05; <em>: p &lt;= 0.05; <strong>: p &lt;= 0.01; </strong></em>: p &lt;= 0.001; ****: p &lt;= 0.0001</td>
 </tr>
 </tbody>
 </table>
@@ -909,3 +900,48 @@ Lets look at the iris data:
     bio_boxplots(iris, x="Species", y= "Sepal.Width", NULL, stars=TRUE)
 
 ![](README_files/figure-markdown_strict/unnamed-chunk-20-2.png)
+
+bio\_sankey
+-----------
+
+Creates a sankey plot with heatmaps showing how individuals progress
+over time.
+
+<table style="width:100%;">
+<colgroup>
+<col width="27%" />
+<col width="72%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>samp.orders</td>
+<td>A list of named vectors for sample order at each timepoint. Vector names must correspond to matchable ids.</td>
+</tr>
+</tbody>
+</table>
+
+    library(lme4)
+    library(ComplexHeatmap)
+    data(sleepstudy)
+    data = sleepstudy
+    data = data[data$Days %in% c(0, 1, 2), ]
+    data = data[data$Days !=1 | data$Subject != "308", ]
+    time.col="Days"
+    exp.cols = "Reaction"
+    sub.col = "Subject"
+
+    row.order=list()
+    for(i in unique(data[, time.col])){
+      hm = Heatmap(data[data[, time.col] == i, exp.cols])
+      row.order[[paste('timepoint', as.character(i))]] = setNames(unlist(row_order(hm)), data[data[, time.col] == i, sub.col])
+    }
+
+    bio_sankey(samp.order=row.order)
+
+![](README_files/figure-markdown_strict/unnamed-chunk-21-1.png)

@@ -28,19 +28,24 @@ plots <- paste0("./figs", '/', plots)
 
 cat('<table border="1">
   <tr>
-    <td align="center" style="vertical-align:top" height="200"><a href="#bires">Bi-Results</a><img src=',plots[1],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#corrp">Correlation Plot</a><img src=',plots[2],' height="150" width="330"/></td>
-    <td style="vertical-align:top" align="center" height="200"><a href="#freq">Frequency Table</a><img src=',plots[4],' height="50" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#bires">Bi-Results</a><img src=',plots[grepl("bires", plots)],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#corrp">Correlation Plot</a><img src=',plots[grepl("corr", plots)],' height="150" width="330"/></td>
+    <td style="vertical-align:top" align="center" height="200"><a href="#freq">Frequency Table</a><img src=',plots[grepl("freq", plots)],' height="50" width="330"/></td>
   </tr>
 	<tr>
-    <td align="center" style="vertical-align:top" height="200"><a href="#mods">Module Plot</a><img src=',plots[5],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#tgcomp">Treatment Group Comparisons</a><img src=',plots[7],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[8],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#mods">Module Plot</a><img src=',plots[grepl("mods", plots)],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#tgcomp">Treatment Group Comparisons</a><img src=',plots[grepl("treatment", plots)],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#volc">Volcano Plot</a><img src=',plots[grepl("volcano", plots)],' height="150" width="330"/></td>
   </tr>
  	<tr>
 		<td align="center" style="vertical-align:top" height="200"><a href="#geneids">Switching Gene Ids</a></td>
-		<td align="center" style="vertical-align:top" height="200"><a href="#fcp">Fold Change Heatmap</a><img src=',plots[3],' height="150" width="330"/></td>
-    <td align="center" style="vertical-align:top" height="200"><a href="#boxp">Significance Boxplots</a><img src=',plots[6],' height="150" width="330"/></td>
+		<td align="center" style="vertical-align:top" height="200"><a href="#fcp">Fold Change Heatmap</a><img src=',plots[grepl("fcp", plots)],' height="150" width="330"/></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#boxp">Significance Boxplots</a><img src=',plots[grepl("sigbox", plots)],' height="150" width="330"/></td>
+  </tr>
+ 	<tr>
+		<td align="center" style="vertical-align:top" height="200"><a href="#geneids">Sankey Plots</a><img src=',plots[grepl("sankey", plots)],' height="150" width="330"/></td>
+		<td align="center" style="vertical-align:top" height="200"></td>
+    <td align="center" style="vertical-align:top" height="200"></td>
   </tr>
 </table>')
 
@@ -100,9 +105,9 @@ library(roxygen2)
 
 package.name="BioOutputs"
 # Load/update the package (desktop)
-setwd(paste("~/Documents/Scripts/Git/", package.name, sep=""))
+#setwd(paste("~/Documents/Scripts/Git/", package.name, sep=""))
 #Initialize the package (laptop)
-#setwd(paste("~/Documents/Git/", package.name, sep=""))
+setwd(paste("~/Documents/Git/", package.name, sep=""))
 
 document()
 ```
@@ -303,7 +308,7 @@ split.var         | Character defining the meta column to average (mean) over.
 
 In this example we will look at two Li modules and a custom one I made up.
 
-```{r, echo=FALSE, eval=TRUE}
+```{r, echo=FALSE, eval=FALSE}
 #load("/Users/phd/Downloads/Complete_web_data_rld.rdata")
 load("~/V:/Katriona/ShinyDocker/CurrentWebsite/DIY/Complete_web_data_rld.rdata")
 #cos.mods <- readRDS("/Users/PhD/Downloads/Module_list_KG.rds")
@@ -315,7 +320,7 @@ mod_list[["custom MS4A1"]] <- as.character(cos.mods$gene[cos.mods$group == "MS4A
 names(mod_list) = c(paste("mod", 1:4))
 ```
 
-```{r mods, eval=TRUE}
+```{r mods, eval=FALSE}
 exp = rld.syn
 meta <- rld.metadata.syn
 
@@ -422,10 +427,31 @@ bio_boxplots(iris, x="Species", y= "Sepal.Width", NULL, stars=TRUE)
 ```
 
 
-<a id="bxop"></a>
 
-## bio_boxplots
+## bio_sankey
+
+Creates a sankey plot with heatmaps showing how individuals progress over time.
+
+Argument           |
+-------------------|----------------------------------------------------
+samp.orders         | A list of named vectors for sample order at each timepoint. Vector names must correspond to matchable ids.
+
 ```{r}
-bio_boxplots(iris, x="Species", y= "Sepal.Width", p.cutoff = 0.0001)
-bio_boxplots(iris, x="Species", y= "Sepal.Width", NULL, stars=TRUE)
+library(lme4)
+library(ComplexHeatmap)
+data(sleepstudy)
+data = sleepstudy
+data = data[data$Days %in% c(0, 1, 2), ]
+data = data[data$Days !=1 | data$Subject != "308", ]
+time.col="Days"
+exp.cols = "Reaction"
+sub.col = "Subject"
+
+row.order=list()
+for(i in unique(data[, time.col])){
+  hm = Heatmap(data[data[, time.col] == i, exp.cols])
+  row.order[[paste('timepoint', as.character(i))]] = setNames(unlist(row_order(hm)), data[data[, time.col] == i, sub.col])
+}
+
+bio_sankey(samp.order=row.order)
 ```
