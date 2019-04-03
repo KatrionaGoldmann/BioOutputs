@@ -29,7 +29,7 @@ Gallery
     <td align="center" style="vertical-align:top" height="200"><a href="#boxp">Significance Boxplots</a><img src= ./figs/bio_sigbox.png  height="150" width="330"/></td>
   </tr>
     <tr>
-        <td align="center" style="vertical-align:top" height="200"><a href="#geneids">Sankey Plots</a><img src= ./figs/bio_sankey.png  height="150" width="330"/></td>
+        <td align="center" style="vertical-align:top" height="200"><a href="#sankey">Sankey Plots</a><img src= ./figs/bio_sankey.png  height="150" width="330"/></td>
         <td align="center" style="vertical-align:top" height="200"></td>
     <td align="center" style="vertical-align:top" height="200"></td>
   </tr>
@@ -900,6 +900,10 @@ Lets look at the iris data:
     bio_boxplots(iris, x="Species", y= "Sepal.Width", NULL, stars=TRUE)
 
 ![](README_files/figure-markdown_strict/unnamed-chunk-20-2.png)
+
+
+
+<a id="sankey"></a>
 
 bio\_sankey
 -----------
