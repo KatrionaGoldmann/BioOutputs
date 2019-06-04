@@ -430,7 +430,7 @@ bio_boxplots(iris, x="Species", y= "Sepal.Width", NULL, stars=TRUE)
 
 ## bio_sankey
 
-Creates a sankey plot with heatmaps showing how individuals progress over time.
+Creates a sankey plot *with heatmaps* showing how individuals progress over time.
 
 Argument           |
 -------------------|----------------------------------------------------
