@@ -30,7 +30,7 @@ Gallery
   </tr>
     <tr>
         <td align="center" style="vertical-align:top" height="200"><a href="#sankey">Sankey Plots</a><img src= ./figs/bio_sankey.png  height="150" width="330"/></td>
-        <td align="center" style="vertical-align:top" height="200"></td>
+        <td align="center" style="vertical-align:top" height="200"><a href="#cap">Capitalize Phrases</a></td>
     <td align="center" style="vertical-align:top" height="200"></td>
   </tr>
 </table>
@@ -420,7 +420,7 @@ Lets look at the leukemia data set
 
     bio_volcano(toptable, fc.col="logFC", label.row.indices=1:10, main="leukemia", add.lines=FALSE)
 
-![](README_files/figure-markdown_strict/unnamed-chunk-15-1.png)
+![](README_files/figure-markdown_strict/unnamed-chunk-14-1.png)
 
 ------------------------------------------------------------------------
 
@@ -631,7 +631,7 @@ package.
 
     bio_treatmentGroups(df, group.col="status", y.col="frail", x.col="time")
 
-![](README_files/figure-markdown_strict/unnamed-chunk-17-1.png)
+![](README_files/figure-markdown_strict/biotreat-1.png)
 
 <a id="geneids"></a>
 
@@ -682,112 +682,7 @@ This function switches gene (or snp) ids using biomart
 For example genes TNF and A1BG:
 
     IDs = c("TNF", "A1BG")
-    kable(bio_geneid(IDs, IDFrom='hgnc_symbol', IDTo = 'ensembl_transcript_id'))
-
-<table>
-<thead>
-<tr class="header">
-<th align="left">hgnc_symbol</th>
-<th align="left">ensembl_transcript_id</th>
-<th align="left">chromosome_name</th>
-<th align="right">start_position</th>
-<th align="right">end_position</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">A1BG</td>
-<td align="left">ENST00000596924</td>
-<td align="left">19</td>
-<td align="right">58345178</td>
-<td align="right">58353499</td>
-</tr>
-<tr class="even">
-<td align="left">A1BG</td>
-<td align="left">ENST00000263100</td>
-<td align="left">19</td>
-<td align="right">58345178</td>
-<td align="right">58353499</td>
-</tr>
-<tr class="odd">
-<td align="left">A1BG</td>
-<td align="left">ENST00000595014</td>
-<td align="left">19</td>
-<td align="right">58345178</td>
-<td align="right">58353499</td>
-</tr>
-<tr class="even">
-<td align="left">A1BG</td>
-<td align="left">ENST00000598345</td>
-<td align="left">19</td>
-<td align="right">58345178</td>
-<td align="right">58353499</td>
-</tr>
-<tr class="odd">
-<td align="left">A1BG</td>
-<td align="left">ENST00000600966</td>
-<td align="left">19</td>
-<td align="right">58345178</td>
-<td align="right">58353499</td>
-</tr>
-<tr class="even">
-<td align="left">TNF</td>
-<td align="left">ENST00000443707</td>
-<td align="left">CHR_HSCHR6_MHC_SSTO_CTG1</td>
-<td align="right">31566312</td>
-<td align="right">31569081</td>
-</tr>
-<tr class="odd">
-<td align="left">TNF</td>
-<td align="left">ENST00000445232</td>
-<td align="left">CHR_HSCHR6_MHC_APD_CTG1</td>
-<td align="right">31643520</td>
-<td align="right">31645322</td>
-</tr>
-<tr class="even">
-<td align="left">TNF</td>
-<td align="left">ENST00000383496</td>
-<td align="left">CHR_HSCHR6_MHC_QBL_CTG1</td>
-<td align="right">31565793</td>
-<td align="right">31568564</td>
-</tr>
-<tr class="odd">
-<td align="left">TNF</td>
-<td align="left">ENST00000420425</td>
-<td align="left">CHR_HSCHR6_MHC_DBB_CTG1</td>
-<td align="right">31557707</td>
-<td align="right">31560476</td>
-</tr>
-<tr class="even">
-<td align="left">TNF</td>
-<td align="left">ENST00000412275</td>
-<td align="left">CHR_HSCHR6_MHC_MANN_CTG1</td>
-<td align="right">31615015</td>
-<td align="right">31617784</td>
-</tr>
-<tr class="odd">
-<td align="left">TNF</td>
-<td align="left">ENST00000448781</td>
-<td align="left">CHR_HSCHR6_MHC_MCF_CTG1</td>
-<td align="right">31651872</td>
-<td align="right">31654641</td>
-</tr>
-<tr class="even">
-<td align="left">TNF</td>
-<td align="left">ENST00000376122</td>
-<td align="left">CHR_HSCHR6_MHC_COX_CTG1</td>
-<td align="right">31562973</td>
-<td align="right">31565742</td>
-</tr>
-<tr class="odd">
-<td align="left">TNF</td>
-<td align="left">ENST00000449264</td>
-<td align="left">6</td>
-<td align="right">31575567</td>
-<td align="right">31578336</td>
-</tr>
-</tbody>
-</table>
+    #kable(bio_geneid(IDs, IDFrom='hgnc_symbol', IDTo = 'ensembl_transcript_id'))
 
 <a id="fcp"></a>
 
@@ -895,20 +790,18 @@ Lets look at the iris data:
 
     bio_boxplots(iris, x="Species", y= "Sepal.Width", p.cutoff = 0.0001)
 
-![](README_files/figure-markdown_strict/unnamed-chunk-20-1.png)
+![](README_files/figure-markdown_strict/bioboxplots-1.png)
 
     bio_boxplots(iris, x="Species", y= "Sepal.Width", NULL, stars=TRUE)
 
-![](README_files/figure-markdown_strict/unnamed-chunk-20-2.png)
-
-
+![](README_files/figure-markdown_strict/bioboxplots-2.png)
 
 <a id="sankey"></a>
 
 bio\_sankey
 -----------
 
-Creates a sankey plot with heatmaps showing how individuals progress
+Creates a sankey plot *with heatmaps* showing how individuals progress
 over time.
 
 <table style="width:100%;">
@@ -948,4 +841,44 @@ over time.
 
     bio_sankey(samp.order=row.order)
 
-![](README_files/figure-markdown_strict/unnamed-chunk-21-1.png)
+![](README_files/figure-markdown_strict/biosankey-1.png)
+
+<a id="cap"></a>
+
+bio\_capitalize
+---------------
+
+Converts strings to appropriate format for titles according to Chicago
+style.
+
+<table style="width:100%;">
+<colgroup>
+<col width="27%" />
+<col width="72%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>titles</td>
+<td>A character vector of phrases to be converted to titles</td>
+</tr>
+<tr class="even">
+<td>exeption.words</td>
+<td>A character vector of words with case to be forced (for example abbreviations and roman numerals)</td>
+</tr>
+<tr class="odd">
+<td>replace.chars</td>
+<td>A named list of characters to replace in title. This works in order of appearance. E.g. c(&quot;\.&quot;=&quot; &quot;) replaces fullstops with spaces.</td>
+</tr>
+</tbody>
+</table>
+
+    shakespeare_plays =c("all's well that ends well", "as you like it","comedy of errors","love's labour's lost", "measure for measure", "merchant of venice","merry wives of windsor","midsummer night's dream","much ado about nothing","taming of the shrew", "tempest", "twelfth night","two gentlemen of verona", "winter's tale", "henry iv, part i","henry iv, part ii", "henry v", "henry vi, part i","henry vi, part ii", "henry vi, part iii", "henry viii","king john", "pericles","richard ii", "richard iii", "antony and cleopatra","coriolanus","cymbeline", "hamlet","julius caesar", "king lear", "macbeth (the scottish play)", "othello", "romeo and juliet","timon of athens", "titus andronicus", "troilus and cressida")
+    exception.words= c("I", "II", "III", "IV", "V", "VI") # Pass in exceptions
+
+    bio_capitalize(head(shakespeare_plays), exception.words)

@@ -43,8 +43,8 @@ cat('<table border="1">
     <td align="center" style="vertical-align:top" height="200"><a href="#boxp">Significance Boxplots</a><img src=',plots[grepl("sigbox", plots)],' height="150" width="330"/></td>
   </tr>
  	<tr>
-		<td align="center" style="vertical-align:top" height="200"><a href="#geneids">Sankey Plots</a><img src=',plots[grepl("sankey", plots)],' height="150" width="330"/></td>
-		<td align="center" style="vertical-align:top" height="200"></td>
+		<td align="center" style="vertical-align:top" height="200"><a href="#sankey">Sankey Plots</a><img src=',plots[grepl("sankey", plots)],' height="150" width="330"/></td>
+		<td align="center" style="vertical-align:top" height="200"><a href="#cap">Capitalize Phrases</a></td>
     <td align="center" style="vertical-align:top" height="200"></td>
   </tr>
 </table>')
@@ -158,7 +158,7 @@ kable(bio_frequency(mtcars, "gear"))
 
 And if wanted we can remove one variable from the table. This is useful if we have unknowns or the likes.
 
-```{r}
+```{r bio_freq}
 kable(bio_frequency(mtcars, "gear", remove.vars=c("5")))
 ```
 
@@ -320,7 +320,7 @@ mod_list[["custom MS4A1"]] <- as.character(cos.mods$gene[cos.mods$group == "MS4A
 names(mod_list) = c(paste("mod", 1:4))
 ```
 
-```{r mods, eval=FALSE}
+```{r biomods, eval=FALSE}
 exp = rld.syn
 meta <- rld.metadata.syn
 
@@ -346,7 +346,7 @@ p.col         | Colour of p-value text
 
 Lets look at kidney disease survival in this example from the survival package.
 
-```{r, warning=FALSE}
+```{r biotreat, warning=FALSE}
 library(survival)
 data(kidney)
 
@@ -373,9 +373,9 @@ attributes         | list of variables you want output
 
 For example genes TNF and A1BG:
 
-```{r}
+```{r biogeneid}
 IDs = c("TNF", "A1BG")
-kable(bio_geneid(IDs, IDFrom='hgnc_symbol', IDTo = 'ensembl_transcript_id'))
+#kable(bio_geneid(IDs, IDFrom='hgnc_symbol', IDTo = 'ensembl_transcript_id'))
 ```
 
 
@@ -396,7 +396,7 @@ overlay         | pvalues on fold change Heatmap or besidde (default = TRUE)
 logp         | Whether or not to log the pvalues
 ...         | Other parameters to pass to Complex Heatmap
 
-```{r, eval=FALSE}
+```{r biofchm, eval=FALSE}
 exp = rld.syn
 meta <- rld.metadata.syn
 
@@ -421,12 +421,12 @@ star.vals         | a list of arguments to pass to the function symnum for symbo
 
 Lets look at the iris data:
 
-```{r}
+```{r bioboxplots}
 bio_boxplots(iris, x="Species", y= "Sepal.Width", p.cutoff = 0.0001)
 bio_boxplots(iris, x="Species", y= "Sepal.Width", NULL, stars=TRUE)
 ```
 
-
+<a id="sankey"></a>
 
 ## bio_sankey
 
@@ -436,7 +436,7 @@ Argument           |
 -------------------|----------------------------------------------------
 samp.orders         | A list of named vectors for sample order at each timepoint. Vector names must correspond to matchable ids.
 
-```{r}
+```{r biosankey}
 library(lme4)
 library(ComplexHeatmap)
 data(sleepstudy)
@@ -455,3 +455,26 @@ for(i in unique(data[, time.col])){
 
 bio_sankey(samp.order=row.order)
 ```
+
+<a id="cap"></a>
+
+## bio_capitalize
+
+Converts strings to appropriate format for titles according to Chicago style. 
+
+Argument           |
+-------------------|----------------------------------------------------
+titles         | A character vector of phrases to be converted to titles
+exeption.words         |  A character vector of words with case to be forced (for example abbreviations and roman numerals)
+replace.chars         | A named list of characters to replace in title. This works in order of appearance. E.g. c("\\."=" ") replaces fullstops with spaces. 
+
+```{r biocap, eval=FALSE}
+shakespeare_plays =c("all's well that ends well", "as you like it","comedy of errors","love's labour's lost", "measure for measure", "merchant of venice","merry wives of windsor","midsummer night's dream","much ado about nothing","taming of the shrew", "tempest", "twelfth night","two gentlemen of verona", "winter's tale", "henry iv, part i","henry iv, part ii", "henry v", "henry vi, part i","henry vi, part ii", "henry vi, part iii", "henry viii","king john", "pericles","richard ii", "richard iii", "antony and cleopatra","coriolanus","cymbeline", "hamlet","julius caesar", "king lear", "macbeth (the scottish play)", "othello", "romeo and juliet","timon of athens", "titus andronicus", "troilus and cressida")
+exception.words= c("I", "II", "III", "IV", "V", "VI") # Pass in exceptions
+
+bio_capitalize(head(shakespeare_plays), exception.words)
+```
+
+ 
+
+ 
