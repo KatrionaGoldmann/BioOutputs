@@ -15,6 +15,8 @@
 
 bio_capitalize = function(titles, exception.words=c(), replace.chars=c("\\."=" ")){
   
+  titles = as.character(titles)
+  
   # words not to be capitalized according to Chicago Style
   not.caps = c("a", "aboard", "about", "above", "across", "after", "against", "along", "amid", "among", "an", 
                "and", "anti", "around", "as", "at", "before", "behind", "below", "beneath", "beside", "besides", 
@@ -46,8 +48,9 @@ bio_capitalize = function(titles, exception.words=c(), replace.chars=c("\\."=" "
     })
     
     # Capitalise first letter even if in list of non-caps
-    if(! words[1] %in% exception.words){title = paste0(toupper(substr(title, 1, 1)), substr(title, 2, nchar(title)))}
-    title = paste(title.words, collapse=" ")
+    if(! words[1] %in% exception.words){
+      title = paste0(toupper(substr(paste(title.words, collapse=" "), 1, 1)), substr(paste(title.words, collapse=" "), 2, nchar(paste(title.words, collapse=" "))))
+      } else{ title = paste(title.words, collapse=" ")}
     
     # Correct white spaces surrounding punctuation
     title = gsub(" (?=[,.!?])", "", title, perl=TRUE)

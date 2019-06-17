@@ -472,7 +472,7 @@ replace.chars         | A named list of characters to replace in title. This wor
 shakespeare_plays =c("all's well that ends well", "as you like it","comedy of errors","love's labour's lost", "measure for measure", "merchant of venice","merry wives of windsor","midsummer night's dream","much ado about nothing","taming of the shrew", "tempest", "twelfth night","two gentlemen of verona", "winter's tale", "henry iv, part i","henry iv, part ii", "henry v", "henry vi, part i","henry vi, part ii", "henry vi, part iii", "henry viii","king john", "pericles","richard ii", "richard iii", "antony and cleopatra","coriolanus","cymbeline", "hamlet","julius caesar", "king lear", "macbeth (the scottish play)", "othello", "romeo and juliet","timon of athens", "titus andronicus", "troilus and cressida")
 exception.words= c("I", "II", "III", "IV", "V", "VI") # Pass in exceptions
 
-bio_capitalize(head(shakespeare_plays), exception.words)
+bio_capitalize(as.character(shakespeare_plays[1:5]), exception.words)
 ```
 
  
