@@ -4,6 +4,7 @@
 #' @param titles A character vector of phrases to be converted to titles
 #' @param exeption.words A character vector of words with case to be forced (for example abbreviations and roman numerals)
 #' @param replace.chars A named list of characters to replace in title. This works in order of appearance. E.g. c("\\."=" ") replaces fullstops with spaces. 
+#' @param assume.abbrev A logical whether to assume words without vowels are abbrevations and should be forced capitalised
 #' @keywords titles
 #' @export
 #' @examples
@@ -12,8 +13,7 @@
 #' 
 #' bio_capitalize(shakespear_plays, exception.words)
 
-
-bio_capitalize = function(titles, exception.words=c(), replace.chars=c("\\."=" ")){
+bio_capitalize = function(titles, exception.words=c(), replace.chars=c("\\."=" "), assume.abbrev=TRUE){
   
   titles = as.character(titles)
   
@@ -39,6 +39,8 @@ bio_capitalize = function(titles, exception.words=c(), replace.chars=c("\\."=" "
       if(! tolower(y) %in% not.caps) {  
         output = paste0(toupper(substr(y, 1, 1)), tolower(substr(y, 2, nchar(y))))
       } else { output = tolower(y)}
+      
+      if(assume.abbrev == TRUE & ! grepl("[aeiouAEIOU]", output)) {output = toupper(y)}
       
       # Now account for the exception words
       if(tolower(output) %in% tolower(exception.words)){

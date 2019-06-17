@@ -5,12 +5,14 @@
 \title{Function to capitalize phrases}
 \usage{
 bio_capitalize(titles, exception.words = c(), replace.chars = c(`\\\\.`
-  = " "))
+  = " "), assume.abbrev = TRUE)
 }
 \arguments{
 \item{titles}{A character vector of phrases to be converted to titles}
 
 \item{replace.chars}{A named list of characters to replace in title. This works in order of appearance. E.g. c("\\."=" ") replaces fullstops with spaces.}
+
+\item{assume.abbrev}{A logical whether to assume words without vowels are abbrevations and should be forced capitalised}
 
 \item{exeption.words}{A character vector of words with case to be forced (for example abbreviations and roman numerals)}
 }
