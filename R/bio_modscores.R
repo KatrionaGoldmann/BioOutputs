@@ -5,7 +5,7 @@
 #' @param module.list List of genes in each module
 #' @return data frame with expression levels for modules
 #' @keywords module, svd, expression
-#' 
+#' @export
 
 bio_modscores <- function(exp, module.list){
   # check how many exp genes are in module.list

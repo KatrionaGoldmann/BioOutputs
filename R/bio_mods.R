@@ -16,7 +16,7 @@
 #' @import grid
 #' @export
 
-bio_mods <- function(exp, mod.list, meta, mean.var,cluster.rows=TRUE, cols=NULL,  main="", show.names=TRUE, mean.subjects=TRUE){
+bio_mods <- function(exp, mod.list, meta, mean.var, cluster.rows=TRUE, cols=NULL,  main="", show.names=TRUE, mean.subjects=TRUE){
 	
 	mod.names <- names(mod.list)
 	
