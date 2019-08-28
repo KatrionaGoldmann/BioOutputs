@@ -5,7 +5,7 @@
 \title{Fold change and pvalues between groups}
 \usage{
 bio_fc_heatmap(exp, var, prefix = "", stars = FALSE, overlay = TRUE,
-  logp = FALSE, ...)
+  logp = FALSE)
 }
 \arguments{
 \item{exp}{Expression Data}

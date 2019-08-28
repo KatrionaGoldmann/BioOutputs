@@ -1,3 +1,6 @@
+library("gtools")
+library(ComplexHeatmap)
+
 #' Mean Expression across Groups
 #'
 #' This function calculates the mean expression (z-score) of sample types
@@ -48,8 +51,8 @@ bio_p.vals = function(exp, var){
 	
 	p.calc = function(x) {
 		pv = list()
-		for(mod in colnames(exp)){
-			vals1 = exp[var %in% c(x[1], x[2]), mod]
+		for(mod in rownames(exp)){
+			vals1 = exp[mod, var %in% c(x[1], x[2])]
 			var.sub = droplevels(var[var %in% c(x[1], x[2])])
 			
 			pv[[mod]] =t.test(vals1 ~ var.sub)$p.value
@@ -83,15 +86,20 @@ bio_p.vals = function(exp, var){
 #' 
 #' fc = bio_fold.change(exp, var)
 #' p = bio_p.vals(exp, var)
-bio_fc_heatmap = function(exp, var, prefix="", stars=FALSE, overlay = TRUE, logp = FALSE, ...){
-	fc = bio_fold.change(exp, var)
+
+bio_fc_heatmap = function(exp, var, prefix="", stars=FALSE, overlay = TRUE, logp = FALSE) 
+{
+	
+  fc = bio_fold.change(t(exp), var)
 	p = bio_p.vals(exp, var)
+	rownames(p) = rownames(fc) = rownames(exp)
 	
 	if (stars == TRUE) {
-		p[p <= 0.01] = "***"
-		p[p < 0.05 & p > 0.01] = "**"
-		p[p <= 0.05] = "*"
-		p[p > 0.05] = ""
+	  pstar = p
+		pstar[pstar <= 0.01] = "***"
+		pstar[pstar < 0.05 & p > 0.01] = "**"
+		pstar[pstar <= 0.05] = "*"
+		pstar[pstar > 0.05] = ""
 	} else{
 		if(logp == TRUE) p = sapply(p, function(x) -log(x), digits=2)
 		p = sapply(p, function(x) format(x, digits=2))
@@ -101,11 +109,13 @@ bio_fc_heatmap = function(exp, var, prefix="", stars=FALSE, overlay = TRUE, logp
 	if(overlay == TRUE){
 	hm = Heatmap(fc, column_title=prefix, 
 					cell_fun = function(j, i, x, y, w, h, col) {
-						grid.text(p[i, j], x, y)
-					}, ...) 
+						grid.text(format(p[i, j], digits=2), x, y)
+					}) 
 	} else{
-		hm = 	Heatmap(fc, column_title=paste(prefix, "Fold Change")) + Heatmap(p, column_title=paste(prefix, "Pvalues"), col = colorRamp2(c(0, max(p, na.rm=T)), c("white", "seagreen4")), name="-log(p)") 
+		hm = 	Heatmap(fc, column_title=paste(prefix, "Fold Change")) + 
+		  Heatmap(p, column_title=paste(prefix, "Pvalues"), col = colorRamp2(c(0, max(p, na.rm=T)), c("white", "seagreen4")), name="-log(p)") 
 	}
+	hm
 }
 
 
