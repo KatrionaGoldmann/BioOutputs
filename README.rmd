@@ -45,7 +45,7 @@ cat('<table border="1">
  	<tr>
 		<td align="center" style="vertical-align:top" height="200"><a href="#sankey">Sankey Plots</a><img src=',plots[grepl("sankey", plots)],' height="150" width="330"/></td>
 		<td align="center" style="vertical-align:top" height="200"><a href="#cap">Capitalize Phrases</a></td>
-    <td align="center" style="vertical-align:top" height="200"></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#modscores">Module Scores</a></td>
   </tr>
 </table>')
 
@@ -472,9 +472,21 @@ replace.chars         | A named list of characters to replace in title. This wor
 shakespeare_plays =c("all's well that ends well", "as you like it","comedy of errors","love's labour's lost", "measure for measure", "merchant of venice","merry wives of windsor","midsummer night's dream","much ado about nothing","taming of the shrew", "tempest", "twelfth night","two gentlemen of verona", "winter's tale", "henry iv, part i","henry iv, part ii", "henry v", "henry vi, part i","henry vi, part ii", "henry vi, part iii", "henry viii","king john", "pericles","richard ii", "richard iii", "antony and cleopatra","coriolanus","cymbeline", "hamlet","julius caesar", "king lear", "macbeth (the scottish play)", "othello", "romeo and juliet","timon of athens", "titus andronicus", "troilus and cressida")
 exception.words= c("I", "II", "III", "IV", "V", "VI") # Pass in exceptions
 
-bio_capitalize(as.character(shakespeare_plays[1:5]), exception.words)
+bio_capitalize(as.character(shakespeare_plays[grepl("henry", shakespeare_plays)]), exception.words)
 ```
 
- 
+ <a id="modscores"></a>
 
+## bio_modscores
+
+Calculates the module expression from a list of genes. 
+
+Argument           |
+-------------------|----------------------------------------------------
+exp         | data frame containing the expression data
+mod.list         | A list of modules. Each element contains the list of genes for a modules. The gene names must match the rownames in the exp dataframe.
+
+```{r, eval=FALSE}
+bio_mods(exp=exp, mod.list=mod_list)
+```
  

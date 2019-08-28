@@ -31,7 +31,7 @@ Gallery
     <tr>
         <td align="center" style="vertical-align:top" height="200"><a href="#sankey">Sankey Plots</a><img src= ./figs/bio_sankey.png  height="150" width="330"/></td>
         <td align="center" style="vertical-align:top" height="200"><a href="#cap">Capitalize Phrases</a></td>
-    <td align="center" style="vertical-align:top" height="200"></td>
+    <td align="center" style="vertical-align:top" height="200"><a href="#modscores">Module Scores</a></td>
   </tr>
 </table>
 
@@ -881,4 +881,36 @@ style.
     shakespeare_plays =c("all's well that ends well", "as you like it","comedy of errors","love's labour's lost", "measure for measure", "merchant of venice","merry wives of windsor","midsummer night's dream","much ado about nothing","taming of the shrew", "tempest", "twelfth night","two gentlemen of verona", "winter's tale", "henry iv, part i","henry iv, part ii", "henry v", "henry vi, part i","henry vi, part ii", "henry vi, part iii", "henry viii","king john", "pericles","richard ii", "richard iii", "antony and cleopatra","coriolanus","cymbeline", "hamlet","julius caesar", "king lear", "macbeth (the scottish play)", "othello", "romeo and juliet","timon of athens", "titus andronicus", "troilus and cressida")
     exception.words= c("I", "II", "III", "IV", "V", "VI") # Pass in exceptions
 
-    bio_capitalize(head(shakespeare_plays), exception.words)
+    bio_capitalize(as.character(shakespeare_plays[grepl("henry", shakespeare_plays)]), exception.words)
+
+<a id="modscores"></a>
+
+bio\_modscores
+--------------
+
+Calculates the module expression from a list of genes.
+
+<table style="width:100%;">
+<colgroup>
+<col width="27%" />
+<col width="72%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Argument</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>exp</td>
+<td>data frame containing the expression data</td>
+</tr>
+<tr class="even">
+<td>mod.list</td>
+<td>A list of modules. Each element contains the list of genes for a modules. The gene names must match the rownames in the exp dataframe.</td>
+</tr>
+</tbody>
+</table>
+
+    bio_mods(exp=exp, mod.list=mod_list)
