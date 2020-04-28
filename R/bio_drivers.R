@@ -5,12 +5,7 @@
 #' components of an omic data matrix and a set of biological and/or technical
 #' features.
 #'
-#' @param dat Omic data matrix or matrix-like object with rows corresponding to
-#'   probes and columns to samples. It is strongly recommended that data be
-#'   filtered and normalized prior to plotting. Raw counts stored in 
-#'   \code{\link[edgeR]{DGEList}} or \code{\link[DESeq2]{DESeqDataSet}} objects 
-#'   are automatically extracted and transformed to the log2-CPM scale, with a
-#'   warning.
+#' @param pcs PCA on expression data 
 #' @param clin Data frame or matrix with rows correponding to samples and
 #'   columns to technical and/or biological features to test for associations
 #'   with omic data.
