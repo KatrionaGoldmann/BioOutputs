@@ -99,7 +99,7 @@
 #' @import ggplot2
 #'
 
-plot_drivers <- function(pcs,
+bio_drivers <- function(pcs,
                          clin,
                          block = NULL,
                          unblock = NULL,
