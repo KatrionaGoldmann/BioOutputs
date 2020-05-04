@@ -122,10 +122,11 @@ bio_drivers <- function(pcs,
   }
   
   # remove columns all identical or all different
-  keep.cols = which(apply(clin, 2, function(x) {
-    length(unique(x[! is.na(x)])) < nrow(clin) &
-      length(unique(x[! is.na(x)])) > 1
-  }))
+  keep.cols = unique(sort(c(which(unlist(lapply(clin, is.numeric))), 
+        which(apply(clin, 2, function(x) {
+              length(unique(x[! is.na(x)])) < nrow(clin) &
+                length(unique(x[! is.na(x)])) > 1
+        })))))
   clin = clin[, keep.cols]
   
   df <- expand.grid(Feature = colnames(clin), PC = colnames(pcs)) %>%
