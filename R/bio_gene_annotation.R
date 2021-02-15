@@ -5,6 +5,19 @@ library(httr)
 library(pbapply)
 library(enrichR)
 
+enrichr_library <- read.table("https://github.com/KatrionaGoldmann/BioOutputs/blob/master/data/enrichr_libraries.csv?raw=true", sep=",", 
+                              header=TRUE)
+enrichrdbs <-  listEnrichrDbs()
+
+enrichr_update <- enrichrdbs$libraryName[! enrichrdbs$libraryName %in% 
+                                           enrichr_library$libraryName]
+
+if(length(enrichr_update) > 0){
+  warning(paste("enrichr library csv needs to be updated. Missing:", 
+                paste(enrichr_update, collapse=", ")))
+}
+remove(enrichr_update, enrichrdbs)
+
 # wrapper function to find all info about a list of genes
 #' @param genes
 #' @param verbose Whether to split out the progress
@@ -20,16 +33,16 @@ library(enrichR)
 #' @param publication_split Whether to use AND or OR when searching the 
 #' publication keywords (default is OR)
 gene_summary <- function(genes, 
-                 verbose=TRUE, 
-                 gene_types=TRUE, 
-                 gene_summaries=TRUE, 
-                 associated_diseases=TRUE, 
-                 publications=FALSE,
-                 gene_types_list = immune_types,
-                 disease_cutoff=0, 
-                 diseases=c("C20", "C05", "C10", "C17"), 
-                 publication_keywords=c("Rheuamtoid", "Autoimmune"), 
-                 publication_split="OR"){
+                         verbose=TRUE, 
+                         gene_types=TRUE, 
+                         gene_summaries=TRUE, 
+                         associated_diseases=TRUE, 
+                         publications=FALSE,
+                         gene_types_list = immune_types,
+                         disease_cutoff=0, 
+                         diseases=c("C20", "C05", "C10", "C17"), 
+                         publication_keywords=c("Rheuamtoid", "Autoimmune"), 
+                         publication_split="OR"){
   df = data.frame("Gene"=genes)
   
   if(gene_types){
@@ -78,26 +91,43 @@ gene_summary <- function(genes,
 #' @param cutoff pvalue cutoff
 #' @param min_N minimum number of genes to consider
 enriched_pathways <- function(genes, 
-                              drop_terms=c("Genome_Browser", "GTEx", "Grants", 
-                                           "Funded", "SysMyo", "Pfam", "CORUM", 
-                                           "LINCS", "User"), 
-                              keep_terms=c("KEGG", "Reactome", "DisGeNET", 
-                                          "Elsevier", "GWAS"),
+                              drop_terms=c("User"), 
+                              keep_terms=c(),
                               dbs=NULL, 
                               cutoff=0.05, 
-                              min_N=2){
+                              min_N=2, 
+                              remove_old = TRUE, 
+                              libraries = c('Transcription', 'Pathways')){
   
-  if(is.null(dbs)) dbs <- listEnrichrDbs() 
+  if(! all(libraries %in% c('Transcription', 'Pathways', 'Ontologies', 
+                            'Diseases_Drugs', 'Cell_Types', 'Misc'))){
+    stop(paste("libraries must be in c('Transcription', 'Pathways',", 
+               "'Ontologies', 'Diseases_Drugs', 'Cell.Types', 'Misc'"))
+  }
+  
+  
+  if(is.null(dbs)) {
+    dbs <- enrichr_library 
+    pathways <- apply(dbs[, libraries], 1, function(r) any(r == "x"))
+    dbs <- dbs[pathways, ]
+  }
+  if(remove_old){
+    dbs <- dbs[dbs$Legacy != "x", ]
+  }
   if(! is.null(drop_terms)) {
     dbs <- dbs[! grepl(paste0(drop_terms, collapse="|"), dbs$libraryName), ]
   }
   if(! is.null(drop_terms)) {
     dbs <- dbs[grepl(paste0(keep_terms, collapse="|"), dbs$libraryName), ]
   }
-
+  
   enriched <- enrichr(genes, dbs$libraryName)
   
   temp = do.call(rbind, enriched)
+  temp$Library = gsub("\\..*", "", rownames(temp))
+  temp = temp[, c('Term', 'Library',  'Overlap', 'P.value', 'Adjusted.P.value', 
+                  'Old.P.value', 'Old.Adjusted.P.value', 'Odds.Ratio', 
+                  'Combined.Score', 'Genes')]
   
   temp$N = as.numeric(gsub("/.*", "", temp$Overlap))
   temp = temp[temp$N >= min_N, ]
@@ -106,7 +136,7 @@ enriched_pathways <- function(genes,
   temp = temp[order(temp$P.value), ]
   
   temp_genes = sort(table(unlist(strsplit(temp$Genes,  ";"))), decreasing=TRUE)
-  return(list(enrichment=temp, enrichment_genes=temp_genes))
+  return(list(enrichment=temp, enrichment_genes_table=temp_genes))
 }
 
 # Immune type genes EMR are interested in 
@@ -269,7 +299,7 @@ got_any_publications <- function(genes,
                                             "autoimmune"), 
                                  split="OR", 
                                  verbose=T){
-
+  
   df <- pblapply(genes, function(g){
     my_query <- paste(g, ' AND (', 
                       paste(keywords, collapse=paste0(" ", split, " ")), ")")
