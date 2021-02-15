@@ -6,7 +6,7 @@ library(pbapply)
 library(enrichR)
 
 enrichr_library <- read.table("https://github.com/KatrionaGoldmann/BioOutputs/blob/master/data/enrichr_libraries.csv?raw=true", sep=",", 
-                              header=TRUE)
+                              header=TRUE, stringsAsFactors = FALSE)
 enrichrdbs <-  listEnrichrDbs()
 
 enrichr_update <- enrichrdbs$libraryName[! enrichrdbs$libraryName %in% 
@@ -95,7 +95,7 @@ gene_summary <- function(genes,
 #' include c('Transcription', 'Pathways', 'Ontologies', 'Diseases_Drugs', 
 #' 'Cell_Types', 'Misc'))
 enriched_pathways <- function(genes, 
-                              drop_terms=c("User"), 
+                              drop_terms=c("User", "Enrichr"), 
                               keep_terms=c(),
                               dbs=NULL, 
                               cutoff=0.05, 
@@ -108,28 +108,40 @@ enriched_pathways <- function(genes,
     stop(paste("libraries must be in c('Transcription', 'Pathways',", 
                "'Ontologies', 'Diseases_Drugs', 'Cell_Types', 'Misc')"))
   }
-
+  
   
   
   if(is.null(dbs)) {
     dbs <- enrichr_library 
-    pathways <- apply(data.frame(dbs[, libraries]), 1, function(r) any(r=="x"))
+    pathways <- apply(data.frame(dbs[, libraries], stringsAsFactors = FALSE), 1, 
+                      function(r) any(r=="x"))
     dbs <- dbs[pathways, ]
   }
   if(remove_old){
     dbs <- dbs[dbs$Legacy != "x", ]
   }
-  if(! is.null(drop_terms)) {
-    dbs <- dbs[! grepl(paste0(drop_terms, collapse="|"), dbs$libraryName), ]
+  if(length(drop_terms) > 0) {
+    dbs <- dbs[! grepl(paste0(drop_terms, collapse="|"), dbs$libraryName, 
+                       ignore.case = TRUE), ]
   }
-  if(! is.null(drop_terms)) {
-    dbs <- dbs[grepl(paste0(keep_terms, collapse="|"), dbs$libraryName), ]
+  if(length(keep_terms) > 0) {
+    dbs <- dbs[grepl(paste0(keep_terms, collapse="|"), dbs$libraryName, 
+                     ignore.case = TRUE), ]
   }
   
   enriched <- enrichr(genes, dbs$libraryName)
   
   temp = do.call(rbind, enriched)
   temp$Library = gsub("\\..*", "", rownames(temp))
+  if(length(drop_terms) > 0) {
+    temp <- temp[! grepl(paste0(drop_terms, collapse="|"), temp$Term, 
+                         ignore.case = TRUE), ]
+  }
+  if(length(keep_terms) > 0) {
+    temp <- temp[! grepl(paste0(keep_terms, collapse="|"), temp$Term, 
+                         ignore.case = TRUE), ]
+  }
+  
   temp = temp[, c('Term', 'Library',  'Overlap', 'P.value', 'Adjusted.P.value', 
                   'Old.P.value', 'Old.Adjusted.P.value', 'Odds.Ratio', 
                   'Combined.Score', 'Genes')]
