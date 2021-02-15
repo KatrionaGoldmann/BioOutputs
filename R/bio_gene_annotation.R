@@ -90,6 +90,10 @@ gene_summary <- function(genes,
 #' those removed by drop_terms. See listEnrichrDbs().  
 #' @param cutoff pvalue cutoff
 #' @param min_N minimum number of genes to consider
+#' @param remove_old Whether to remove legacy libraries ()
+#' @param libraries Which type of libraries to check for enrichment. Options 
+#' include c('Transcription', 'Pathways', 'Ontologies', 'Diseases_Drugs', 
+#' 'Cell_Types', 'Misc'))
 enriched_pathways <- function(genes, 
                               drop_terms=c("User"), 
                               keep_terms=c(),
@@ -99,16 +103,17 @@ enriched_pathways <- function(genes,
                               remove_old = TRUE, 
                               libraries = c('Transcription', 'Pathways')){
   
-  if(! all(libraries %in% c('Transcription', 'Pathways', 'Ontologies', 
+  if(any(! libraries %in% c('Transcription', 'Pathways', 'Ontologies', 
                             'Diseases_Drugs', 'Cell_Types', 'Misc'))){
     stop(paste("libraries must be in c('Transcription', 'Pathways',", 
-               "'Ontologies', 'Diseases_Drugs', 'Cell.Types', 'Misc'"))
+               "'Ontologies', 'Diseases_Drugs', 'Cell_Types', 'Misc')"))
   }
+
   
   
   if(is.null(dbs)) {
     dbs <- enrichr_library 
-    pathways <- apply(dbs[, libraries], 1, function(r) any(r == "x"))
+    pathways <- apply(data.frame(dbs[, libraries]), 1, function(r) any(r=="x"))
     dbs <- dbs[pathways, ]
   }
   if(remove_old){
