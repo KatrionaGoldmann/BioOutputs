@@ -94,6 +94,9 @@ gene_summary <- function(genes,
 #' @param libraries Which type of libraries to check for enrichment. Options 
 #' include c('Transcription', 'Pathways', 'Ontologies', 'Diseases_Drugs', 
 #' 'Cell_Types', 'Misc'))
+#' @param plot_cap Maximum number of terms to plot
+#' @param plot_pcutoff Pvalue cutoff for plotting
+
 enriched_pathways <- function(genes, 
                               drop_terms=c("User", "Enrichr"), 
                               keep_terms=c(),
@@ -101,7 +104,12 @@ enriched_pathways <- function(genes,
                               cutoff=0.05, 
                               min_N=2, 
                               remove_old = TRUE, 
-                              libraries = c('Transcription', 'Pathways')){
+                              libraries = c('Transcription', 'Pathways'), 
+                              plot_cap=20, 
+                              plot_pcutoff=0.01,
+                              plot_colour = "Combined.Score", 
+                              plot_x="P.value", 
+                              plot_vline=NA){
   
   if(any(! libraries %in% c('Transcription', 'Pathways', 'Ontologies', 
                             'Diseases_Drugs', 'Cell_Types', 'Misc'))){
@@ -152,9 +160,44 @@ enriched_pathways <- function(genes,
   
   temp = temp[order(temp$P.value), ]
   
+  if(nrow(temp)<=1) stop("Need more than one pathway")
+  plot_df <- temp[temp$P.value < plot_pcutoff, ]
+  plot_df[, plot_x] = as.numeric(as.character(plot_df[, plot_x]))
+  plot_df = plot_df[order(plot_df[, plot_x]), ]
+  plot_df = plot_df[1:(min(nrow(plot_df), plot_cap, na.rm=T)), ]
+  plot_df$count = splitstackshape::getanID(plot_df$Term)$.id 
+  plot_df$Term[plot_df$count != 1] = paste0(plot_df$Term, " (", plot_df$count, ")")[plot_df$count != 1]
+  plot_df$Term <- factor(plot_df$Term, levels=rev(unique(plot_df$Term)))
+  plot_df$x=plot_df[, plot_x]
+  plot_df$col=plot_df[, plot_colour]
+  
+  if(grepl("P.value", plot_x)) {
+    plot_df$x = -log10(plot_df$x)
+    plot_x=paste0("-log(", plot_x, ")")
+  }
+  
+  plot = ggplot(plot_df, aes(x=Term, y=x, fill=col)) +
+    geom_bar(stat="identity") + 
+    coord_flip() +
+    theme_minimal() + 
+    labs(x="", y=plot_x, fill=plot_colour) + 
+    scale_fill_continuous(low="red", high="midnightblue", 
+                          guide=guide_colorbar(reverse=grepl("P.value", plot_colour)))
+  
+  if(! is.na(plot_vline)) {
+    plot <- plot + geom_hline(yintercept = plot_vline, 
+                              colour="grey60", linetype="dashed")
+  }
+  
   temp_genes = sort(table(unlist(strsplit(temp$Genes,  ";"))), decreasing=TRUE)
-  return(list(enrichment=temp, enrichment_genes_table=temp_genes))
+  
+  
+  return(list(enrichment=temp, enrichment_genes_table=temp_genes, plot=plot))
 }
+
+
+
+
 
 # Immune type genes EMR are interested in 
 immune_types = list("ADAM"=c("ADAM", ""),
