@@ -4,8 +4,12 @@
 \alias{bio_capitalize}
 \title{Function to capitalize phrases}
 \usage{
-bio_capitalize(titles, exception.words = c(), replace.chars = c(`\\\\.`
-  = " "), assume.abbrev = TRUE)
+bio_capitalize(
+  titles,
+  exception.words = c(),
+  replace.chars = c(`\\\\.` = " "),
+  assume.abbrev = TRUE
+)
 }
 \arguments{
 \item{titles}{A character vector of phrases to be converted to titles}

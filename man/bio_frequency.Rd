@@ -4,8 +4,13 @@
 \alias{bio_frequency}
 \title{Function to generate a frequency table}
 \usage{
-bio_frequency(data, columns, freq.percent = "both", include.na = TRUE,
-  remove.vars = NULL)
+bio_frequency(
+  data,
+  columns,
+  freq.percent = "both",
+  include.na = TRUE,
+  remove.vars = NULL
+)
 }
 \arguments{
 \item{data}{A data frame containing columns to be counted}

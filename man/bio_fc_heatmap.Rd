@@ -4,8 +4,14 @@
 \alias{bio_fc_heatmap}
 \title{Fold change and pvalues between groups}
 \usage{
-bio_fc_heatmap(exp, var, prefix = "", stars = FALSE, overlay = TRUE,
-  logp = FALSE)
+bio_fc_heatmap(
+  exp,
+  var,
+  prefix = "",
+  stars = FALSE,
+  overlay = TRUE,
+  logp = FALSE
+)
 }
 \arguments{
 \item{exp}{Expression Data}
@@ -27,6 +33,14 @@ A list containing the mean expression for each group, the fold change between gr
 }
 \description{
 This function exports a complex heatmap looking at the expression of different modules which can be customised
+}
+\examples{
+m.var = metadata.final[metadata.final$Pathotype \%in\% c("Fibroid", "Lymphoid"), ]
+exp = t(rldMatrix[, match(m.var$SampleID..QMUL.or.Genentech., colnames(rldMatrix))])
+var = droplevels(m.var$Pathotype)
+
+fc = bio_fold.change(exp, var)
+p = bio_p.vals(exp, var)
 }
 \keyword{change,}
 \keyword{expression,}

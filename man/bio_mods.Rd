@@ -4,8 +4,17 @@
 \alias{bio_mods}
 \title{Function to investigate expression for custom modules}
 \usage{
-bio_mods(exp, mod.list, meta, mean.var, cluster.rows = TRUE,
-  cols = NULL, main = "", show.names = TRUE, mean.subjects = TRUE)
+bio_mods(
+  exp,
+  mod.list,
+  meta,
+  mean.var,
+  cluster.rows = TRUE,
+  cols = NULL,
+  main = "",
+  show.names = TRUE,
+  mean.subjects = TRUE
+)
 }
 \arguments{
 \item{exp}{data frame containing the expression data}

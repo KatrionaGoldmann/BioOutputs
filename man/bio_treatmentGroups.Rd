@@ -4,8 +4,16 @@
 \alias{bio_treatmentGroups}
 \title{Function to compare two treatment groups}
 \usage{
-bio_treatmentGroups(df, group.col, y.col = "y", x.col = "x",
-  id.col = "id", main = "", cols = NULL, p.col = "maroon")
+bio_treatmentGroups(
+  df,
+  group.col,
+  y.col = "y",
+  x.col = "x",
+  id.col = "id",
+  main = "",
+  cols = NULL,
+  p.col = "maroon"
+)
 }
 \arguments{
 \item{df}{Data frame containing the data for both groups}

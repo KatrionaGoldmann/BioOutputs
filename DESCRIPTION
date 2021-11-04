@@ -1,11 +1,12 @@
 Package: BioOutputs
-Title: Visualisation of Biological Data 
+Title: Visualisation of Biological Data
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R:
     person("Katriona", "Goldmann", email = "k.goldmann@qmul.ac.uk",
                   role = c("aut", "cre"))
-Description: This package contains common R scripts I use in my day to day data analysis of biological data. The scripts are primarily for plotting and visualisation, with some data organisation thrown in as well. 
+Description: This package contains common R scripts I use in my day to day data analysis of biological data. The scripts are primarily for plotting and visualisation, with some data organisation thrown in as well.
 License: What license it uses
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.2
+biocViews:

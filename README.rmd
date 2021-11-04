@@ -107,7 +107,7 @@ package.name="BioOutputs"
 # Load/update the package (desktop)
 #setwd(paste("~/Documents/Scripts/Git/", package.name, sep=""))
 #Initialize the package (laptop)
-setwd(paste("~/Documents/Git/", package.name, sep=""))
+setwd(paste("~/Documents/Analyses/", package.name, sep=""))
 
 document()
 ```

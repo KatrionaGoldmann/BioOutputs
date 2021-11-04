@@ -4,13 +4,24 @@
 \alias{bio_volcano}
 \title{Function to generate a volcano plot}
 \usage{
-bio_volcano(toptable, fc.col = "log2FC", padj.col = NULL,
-  padj.method = "fdr", padj.cutoff = 0.05, fc.cutoff = 1,
+bio_volcano(
+  toptable,
+  fc.col = "log2FC",
+  padj.col = NULL,
+  padj.method = "fdr",
+  padj.cutoff = 0.05,
+  fc.cutoff = 1,
   marker.colour = c("grey60", "olivedrab", "salmon", "darkturquoise"),
-  label.p.cutoff = NULL, label.row.indices = NULL,
-  label.colour = "black", legend.labs = NULL, add.lines = TRUE,
-  line.colour = "grey14", main = "Volcano Plot", xlims = NULL,
-  ylims = NULL)
+  label.p.cutoff = NULL,
+  label.row.indices = NULL,
+  label.colour = "black",
+  legend.labs = NULL,
+  add.lines = TRUE,
+  line.colour = "grey14",
+  main = "Volcano Plot",
+  xlims = NULL,
+  ylims = NULL
+)
 }
 \arguments{
 \item{toptable}{A data frame containing p value and fold change columns for parameters compared across multiple groups. The p value column should be named "pvalue".}

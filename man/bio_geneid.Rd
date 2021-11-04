@@ -4,9 +4,14 @@
 \alias{bio_geneid}
 \title{Function to switch Gene Ids}
 \usage{
-bio_geneid(IDs, IDFrom = "ensembl_transcript_id", IDTo = "hgnc_symbol",
-  mart = "ensembl", dataset = "hsapiens_gene_ensembl",
-  attributes = c("chromosome_name", "start_position", "end_position"))
+bio_geneid(
+  IDs,
+  IDFrom = "ensembl_transcript_id",
+  IDTo = "hgnc_symbol",
+  mart = "ensembl",
+  dataset = "hsapiens_gene_ensembl",
+  attributes = c("chromosome_name", "start_position", "end_position")
+)
 }
 \arguments{
 \item{IDs}{list of the Ids you want to convert}

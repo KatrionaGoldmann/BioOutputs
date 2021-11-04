@@ -80,6 +80,7 @@ bio_p.vals = function(exp, var){
 #' @import ComplexHeatmap
 #' @import gtools
 #' @export
+#' @examples
 #' m.var = metadata.final[metadata.final$Pathotype %in% c("Fibroid", "Lymphoid"), ]
 #' exp = t(rldMatrix[, match(m.var$SampleID..QMUL.or.Genentech., colnames(rldMatrix))])
 #' var = droplevels(m.var$Pathotype)

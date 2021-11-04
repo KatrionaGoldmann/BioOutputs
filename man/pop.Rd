@@ -4,7 +4,9 @@
 \name{pop}
 \alias{pop}
 \title{Function to compare multiple populations}
-\format{An object of class \code{character} of length 1.}
+\format{
+An object of class \code{character} of length 1.
+}
 \usage{
 pop
 }

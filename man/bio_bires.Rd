@@ -4,9 +4,19 @@
 \alias{bio_bires}
 \title{Function to plot if results above or below cut-off line}
 \usage{
-bio_bires(x, y, df.data, x.plane, y.plane, df.plane, stepwise = TRUE,
-  colours = c("red", "green", "grey"), inc.equal = TRUE,
-  labels = c("above", "below"), type = "point")
+bio_bires(
+  x,
+  y,
+  df.data,
+  x.plane,
+  y.plane,
+  df.plane,
+  stepwise = TRUE,
+  colours = c("red", "green", "grey"),
+  inc.equal = TRUE,
+  labels = c("above", "below"),
+  type = "point"
+)
 }
 \arguments{
 \item{x}{y column name in data}

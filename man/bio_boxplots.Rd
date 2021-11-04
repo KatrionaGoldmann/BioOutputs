@@ -4,8 +4,15 @@
 \alias{bio_boxplots}
 \title{Comparison Boxplots}
 \usage{
-bio_boxplots(data, x, y, p.cutoff = 0.5, stars = FALSE,
-  method = "t.test", star.vals = NULL)
+bio_boxplots(
+  data,
+  x,
+  y,
+  p.cutoff = 0.5,
+  stars = FALSE,
+  method = "t.test",
+  star.vals = NULL
+)
 }
 \arguments{
 \item{data}{Data frame containing columns x and y}
