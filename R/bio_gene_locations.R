@@ -44,8 +44,8 @@ bio_gene_locations <- function(chromosome = 6,
   id_col <- ifelse(stat == "gene_level", "gene_id", "tx_id")
   
   if(length(subset_genes) > 0) {
-    filt <- ~(symbol %in% subset_genes) 
-  } else { filt <- NULL }
+    filt <- ~ (symbol %in% subset_genes) 
+  } else { filt <- AnnotationFilterList() }
   
   # subset to genes of interest if input
   if(stat == "gene_level") { 
@@ -65,20 +65,27 @@ bio_gene_locations <- function(chromosome = 6,
     return(TX)
   } else {
     
-    if(length(unique(TX$symbol)) > 50) 
-      warning(paste0("This region contains a lot of genes (n=", 
-                     length(unique(TX$symbol)), ") ", 
+    if(nrow(TX) > 50) 
+      message(paste0("----------------\n\n", 
+                     "Beware: This region contains many ", 
+                     ifelse(stat=="gene", "genes", "transcripts"), " (n=", 
+                     nrow(TX), ") ", 
                      "therefore plotting may take some time. Try subsetting ", 
-                     "to genes of interest if it is too time consuming (set ",
-                     "output_plots=FALSE to view the genes within this ", 
-                     "region). "))
+                     "to genes of interest if this is too time consuming (set ",
+                     "output_plots=FALSE to view the genes/transcripts within ", 
+                     "this region in a data frame). \n\n----------------\n"))
     
-    p_txdb = autoplot(edb,
-                      ~ (gene_id %in% TX$gene_id &
-                           symbol %in% TX$symbol),
-                      names.expr="", heights=1, 
-                      stat=ifelse(stat=="gene_level", "reduce", "identity"))
-    
+    if(stat == "gene_level"){
+      p_txdb = autoplot(edb,
+                        ~ (gene_id %in% TX$gene_id &
+                             symbol %in% TX$symbol),
+                        names.expr="", heights=1, 
+                        stat="reduce")
+    } else { 
+      p_txdb = autoplot(edb, ~ (gene_id %in% TX$gene_id),
+                        names.expr="", heights=1, stat="identity")
+      
+    }
     
     # get the gene information from the plot
     gt = extract_layers(attr(p_txdb, 'ggplot'), "GeomText")
