@@ -7,87 +7,111 @@
 #' @param subset_gene List of genes to plot/subset to within xrange
 #' @param ggtheme ggplot theme to give plots. 
 #' @param output_plots Logical whether to output plots
+#' @param ens_version The EnsemblDB version. You will need this package 
+#' installed. Options include: "EnsDb.Hsapiens.v75", "EnsDb.Hsapiens.v86"...
+#' @param stat The plotting stat for autoplot (either 'gene_level' for gene level
+#' annotation or 'tx_level' for transcript level annotation)
+#' @param label_col The column to label genes/transcripts by from the EnsemblDB. 
+#'  Options include those in `EnsDb.Hsapiens.v75@tables$gene` or 
+#'  `EnsDb.Hsapiens.v75@tables$tx` (depending on stat), for example: 'gene_id', 
+#'  'tx_id', 'symbol', 'entrezid', ...
 #' @importFrom ggplot2 aes lims
 #' @importFrom ggbio autoplot theme_null
 #' @importFrom plotly ggplotly layout config
 #' @importFrom gginnards extract_layers
-#' @importFrom ensembldb genes
+#' @importFrom ensembldb genes transcripts
 #' @importFrom ggrepel geom_text_repel
-#' @import EnsDb.Hsapiens.v75
 #' @export
 #' @examples
 #' bio_gene_locations()
 
 bio_gene_locations <- function(chromosome = 6, 
-                          xrange = c(33.5e6, 34e6), 
-                          subset_genes=c(), 
-                          ggtheme=theme_null(), 
-                          output_plots=TRUE){
+                               xrange = c(28e6, 34e6), 
+                               subset_genes=c(), 
+                               font_size = 3,
+                               ggtheme=theme_null(), 
+                               output_plots=TRUE, 
+                               ens_version="EnsDb.Hsapiens.v75", 
+                               stat="gene_level", 
+                               label_col=ifelse(stat == "gene_level", 
+                                                "symbol", "tx_id")){
+  
+  require(ens_version, character.only = TRUE)
+  edb <- get(ens_version)
+  
+  if(! stat %in% c("gene_level", "tx_level")) 
+    stop("stat must be either 'gene_level' or 'tx_level'.")
+  id_col <- ifelse(stat == "gene_level", "gene_id", "tx_id")
+  
+  if(length(subset_genes) > 0) {
+    filt <- ~(symbol %in% subset_genes) 
+  } else { filt <- NULL }
   
   # subset to genes of interest if input
-  if(length(subset_genes) > 0) { 
-    TX =  data.frame(genes(EnsDb.Hsapiens.v75, 
-                           filter = ~(symbol %in% subset_genes)))
-  } else{ TX = data.frame(genes(EnsDb.Hsapiens.v75)) }
+  if(stat == "gene_level") { 
+    TX =  data.frame(genes(edb, filter = filt))
+  } else {TX =  data.frame(transcripts(edb, filter = filt)) }
   TX = TX[! is.na(TX$start), ]
   TX = TX[TX$seqnames == chromosome, ]
   TX = TX[TX$start > xrange[1], ]
   TX = TX[TX$end < xrange[2], ]
   TX$direction = TX$start - TX$end
   
+  if(nrow(TX) == 0) stop(ifelse(length(subset_genes) == 0, 
+                                "No genes in this range.", 
+                                "No subset genes in this range."))
+  
   if(! output_plots){
     return(TX)
   } else {
-  
-  # Create two plots: one stacked and one reduced
-  p_txdb_stacked = autoplot(EnsDb.Hsapiens.v75,
-                                   ~ (gene_id %in% TX$gene_id &
-                                        symbol %in% TX$symbol),
-                                   names.expr="gene_name", heights=1)
-  
-  p_txdb_reduced = autoplot(EnsDb.Hsapiens.v75,
-                                   ~ (gene_id %in% TX$gene_id &
-                                        symbol %in% TX$symbol),
-                                   names.expr="",
-                                   heights=1, stat="reduce")
-  
-  # get the gene information from the stacked plot
-  gt = extract_layers(attr(p_txdb_stacked, 'ggplot'), "GeomText")
-  df.p = gt[[1]]$data
-  
-  # output for the reduced plot
-  g.plot =  attr(p_txdb_reduced, 'ggplot') + ggtheme
-  
-  # create the stacked names
-  df.p = df.p[order(df.p$stepping, df.p$midpoint), ]
-  df.p$length = rep(c(-50/length(unique(df.p$stepping)),
-                      -100/length(unique(df.p$stepping))),
-                    ceiling(nrow(df.p)/2))[1:nrow(df.p)]
-  
-  df.p =df.p[! duplicated(df.p$.labels), ]
-  
-  # ggplot gene location
-  gglocation = g.plot + 
-    geom_text_repel(data=df.p, max.overlaps=35, 
-                    aes(x = midpoint, y = 1.25, label = .labels), 
-                    ylim=c(1.25, Inf), size=3) + 
-    lims(y=c(0.75, 1.7), x=xrange) + ggtheme
-  
-  # create annotations
-  ann = lapply(seq_along(df.p$tx_id), function(j) {
-    list(x = df.p$midpoint[j], y = 1.27, ax = 1, ay = 1,
-         text = df.p$.labels[j], textangle = 0,
-         font = list(color = "black"),
-         arrowcolor = "black", xanchor = "auto", yanchor = "auto",
-         arrowwidth = 1, arrowhead = 0, arrowsize = 1.5
-    )
-  })
-  plotly_location <- ggplotly(g.plot) %>%  layout( annotations = ann) %>%
-    config(edits = list(annotationTail = TRUE),
-                   toImageButtonOptions = list(format = "svg")) 
-  
-  return(list("gglocation"=gglocation, "plotly_location"=plotly_location, 
-              "ggstacked"=attr(p_txdb_stacked, 'ggplot') + 
-                ggtheme + lims(x=xrange)))
+    
+    if(length(unique(TX$symbol)) > 50) 
+      warning(paste0("This region contains a lot of genes (n=", 
+                     length(unique(TX$symbol)), ") ", 
+                     "therefore plotting may take some time. Try subsetting ", 
+                     "to genes of interest if it is too time consuming (set ",
+                     "output_plots=FALSE to view the genes within this ", 
+                     "region). "))
+    
+    p_txdb = autoplot(edb,
+                      ~ (gene_id %in% TX$gene_id &
+                           symbol %in% TX$symbol),
+                      names.expr="", heights=1, 
+                      stat=ifelse(stat=="gene_level", "reduce", "identity"))
+    
+    
+    # get the gene information from the plot
+    gt = extract_layers(attr(p_txdb, 'ggplot'), "GeomText")
+    df.p = gt[[1]]$data
+    df.p$.labels <- TX[match(df.p[, id_col], TX[, id_col]), label_col]
+    
+    # ggplot output
+    g.plot =  attr(p_txdb, 'ggplot') + ggtheme
+    
+    # create the names and positions
+    df.p = df.p[order(df.p$stepping, df.p$midpoint), ]
+    if(stat == "gene_level") df.p$y <- 1 else df.p$y <- df.p$stepping
+    
+    # ggplot gene location
+    gglocation = g.plot + 
+      geom_text_repel(data=df.p, max.overlaps=35, 
+                      aes(x = midpoint, y = y + 0.25, label = .labels), 
+                      ylim=c(1.25, Inf), size=font_size) + 
+      lims(x=xrange) + ggtheme
+    
+    # create annotations
+    ann = lapply(seq_along(df.p[, id_col]), function(j) {
+      list(x = df.p$midpoint[j], y = df.p$y[j] + 0.25, ax = 1, ay = 1,
+           text = df.p$.labels[j], textangle = 0,
+           font = list(color = "black", size=font_size*4),
+           arrowcolor = "black", xanchor = "auto", yanchor = "auto",
+           arrowwidth = 1, arrowhead = 0, arrowsize = 1.5
+      )
+    })
+    plotly_location <- ggplotly(g.plot) %>%  layout(annotations = ann) %>%
+      config(edits = list(annotationTail = TRUE),
+             toImageButtonOptions = list(format = "svg")) 
+    
+    return(list("gglocation"=gglocation, "plotly_location"=plotly_location))
   }
 }

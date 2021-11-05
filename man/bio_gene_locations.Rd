@@ -6,10 +6,14 @@
 \usage{
 bio_gene_locations(
   chromosome = 6,
-  xrange = c(33500000, 3.4e+07),
+  xrange = c(2.8e+07, 3.4e+07),
   subset_genes = c(),
+  font_size = 3,
   ggtheme = theme_null(),
-  output_plots = TRUE
+  output_plots = TRUE,
+  ens_version = "EnsDb.Hsapiens.v75",
+  stat = "gene_level",
+  label_col = ifelse(stat == "gene_level", "symbol", "tx_id")
 )
 }
 \arguments{
@@ -20,6 +24,17 @@ bio_gene_locations(
 \item{ggtheme}{ggplot theme to give plots.}
 
 \item{output_plots}{Logical whether to output plots}
+
+\item{ens_version}{The EnsemblDB version. You will need this package 
+installed. Options include: "EnsDb.Hsapiens.v75", "EnsDb.Hsapiens.v86"...}
+
+\item{stat}{The plotting stat for autoplot (either 'gene_level' for gene level
+annotation or 'tx_level' for transcript level annotation)}
+
+\item{label_col}{The column to label genes/transcripts by from the EnsemblDB. 
+Options include those in `EnsDb.Hsapiens.v75@tables$gene` or 
+`EnsDb.Hsapiens.v75@tables$tx` (depending on stat), for example: 'gene_id', 
+'tx_id', 'symbol', 'entrezid', ...}
 
 \item{subset_gene}{List of genes to plot/subset to within xrange}
 }
