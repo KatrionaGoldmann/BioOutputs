@@ -29,12 +29,14 @@ bio_gene_locations <- function(chromosome = 6,
                                xrange = c(28e6, 34e6), 
                                subset_genes=c(), 
                                font_size = 3,
-                               ggtheme=theme_null(), 
-                               output_plots=TRUE, 
-                               ens_version="EnsDb.Hsapiens.v75", 
-                               stat="gene_level", 
-                               label_col=ifelse(stat == "gene_level", 
-                                                "symbol", "tx_id")){
+                               ggtheme = theme_null(), 
+                               output_plots = TRUE, 
+                               ens_version = "EnsDb.Hsapiens.v75", 
+                               stat = "gene_level", 
+                               text_col = "black",
+                               annotation_col = "black", 
+                               label_col = ifelse(stat == "gene_level", 
+                                                  "symbol", "tx_id")){
   
   require(ens_version, character.only = TRUE)
   edb <- get(ens_version)
@@ -68,8 +70,8 @@ bio_gene_locations <- function(chromosome = 6,
     if(nrow(TX) > 50) 
       message(paste0("----------------\n\n", 
                      "Beware: This region contains many ", 
-                     ifelse(stat=="gene", "genes", "transcripts"), " (n=", 
-                     nrow(TX), ") ", 
+                     ifelse(stat=="gene_level", "genes", "transcripts"), 
+                     " (n=", nrow(TX), ") ", 
                      "therefore plotting may take some time. Try subsetting ", 
                      "to genes of interest if this is too time consuming (set ",
                      "output_plots=FALSE to view the genes/transcripts within ", 
@@ -80,9 +82,9 @@ bio_gene_locations <- function(chromosome = 6,
                         ~ (gene_id %in% TX$gene_id &
                              symbol %in% TX$symbol),
                         names.expr="", heights=1, 
-                        stat="reduce")
+                        stat="reduce", color=annotation_col)
     } else { 
-      p_txdb = autoplot(edb, ~ (gene_id %in% TX$gene_id),
+      p_txdb = autoplot(edb, ~ (gene_id %in% TX$gene_id), color=annotation_col,
                         names.expr="", heights=1, stat="identity")
       
     }
@@ -91,6 +93,9 @@ bio_gene_locations <- function(chromosome = 6,
     gt = extract_layers(attr(p_txdb, 'ggplot'), "GeomText")
     df.p = gt[[1]]$data
     df.p$.labels <- TX[match(df.p[, id_col], TX[, id_col]), label_col]
+    
+    # get the segments
+    sl = extract_layers(attr(p_txdb, 'ggplot'), "GeomSegment")
     
     # ggplot output
     g.plot =  attr(p_txdb, 'ggplot') + ggtheme
@@ -101,7 +106,7 @@ bio_gene_locations <- function(chromosome = 6,
     
     # ggplot gene location
     gglocation = g.plot + 
-      geom_text_repel(data=df.p, max.overlaps=35, 
+      geom_text_repel(data=df.p, max.overlaps=35, color=text_col,
                       aes(x = midpoint, y = y + 0.25, label = .labels), 
                       ylim=c(1.25, Inf), size=font_size) + 
       lims(x=xrange) + ggtheme
@@ -110,14 +115,14 @@ bio_gene_locations <- function(chromosome = 6,
     ann = lapply(seq_along(df.p[, id_col]), function(j) {
       list(x = df.p$midpoint[j], y = df.p$y[j] + 0.25, ax = 1, ay = 1,
            text = df.p$.labels[j], textangle = 0,
-           font = list(color = "black", size=font_size*4),
-           arrowcolor = "black", xanchor = "auto", yanchor = "auto",
+           font = list(color = text_col, size=font_size*4),
+           arrowcolor = text_col, xanchor = "auto", yanchor = "auto",
            arrowwidth = 1, arrowhead = 0, arrowsize = 1.5
       )
     })
     plotly_location <- ggplotly(g.plot) %>%  layout(annotations = ann) %>%
       plotly::config(edits = list(annotationTail = TRUE),
-             toImageButtonOptions = list(format = "svg")) 
+                     toImageButtonOptions = list(format = "svg")) 
     
     return(list("gglocation"=gglocation, "plotly_location"=plotly_location))
   }
