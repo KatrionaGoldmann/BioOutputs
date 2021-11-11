@@ -116,7 +116,7 @@ bio_gene_locations <- function(chromosome = 6,
       )
     })
     plotly_location <- ggplotly(g.plot) %>%  layout(annotations = ann) %>%
-      config(edits = list(annotationTail = TRUE),
+      plotly::config(edits = list(annotationTail = TRUE),
              toImageButtonOptions = list(format = "svg")) 
     
     return(list("gglocation"=gglocation, "plotly_location"=plotly_location))
