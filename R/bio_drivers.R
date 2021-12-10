@@ -40,6 +40,8 @@
 #' @param hover Show \emph{p}-values by hovering mouse over tiles? If 
 #'   \code{TRUE}, the plot is rendered in HTML and will either open in your 
 #'   browser's graphic display or appear in the RStudio viewer.
+#' @param drop_insignificant Logical whether to remove clinical params and pcs where all non-significant
+#' @param return_plot Logical whether to return a plot or the data frame
 #'
 #' @details
 #' Strength of association is measured by -log \emph{p}-values, optionally
@@ -99,7 +101,7 @@
 #' @import ggplot2
 #'
 
-bio_drivers <- function(pcs,
+plot_drivers <- function(pcs,
                          clin,
                          block = NULL,
                          unblock = NULL,
@@ -110,24 +112,18 @@ bio_drivers <- function(pcs,
                          label = FALSE,
                          alpha = 0.05,
                          p.adj = NULL,
+                         max_col = NULL, 
                          title = 'Variation By Feature',
                          legend = 'right',
-                         hover = FALSE) {
+                         hover = FALSE, 
+                         drop_insignificant = FALSE, 
+                         return_plot=TRUE) {
   
   
-  sig <- function(j, pc) {  # p-val fn
+  sig <- function(j, pc) {                       # p-val fn
     mod <- lm(pcs[, pc] ~ clin[[j]])
-    if_else(clin[[j]] %>% is.numeric, summary(mod)$coef[2L, 4L], 
-            anova(mod)[1L, 5L])
+    if_else(clin[[j]] %>% is.numeric, summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
   }
-  
-  # remove columns all identical or all different
-  keep.cols = unique(sort(c(which(unlist(lapply(clin, is.numeric))), 
-        which(apply(clin, 2, function(x) {
-              length(unique(x[! is.na(x)])) < nrow(clin) &
-                length(unique(x[! is.na(x)])) > 1
-        })))))
-  clin = clin[, keep.cols]
   
   df <- expand.grid(Feature = colnames(clin), PC = colnames(pcs)) %>%
     rowwise(.) %>%
@@ -137,8 +133,7 @@ bio_drivers <- function(pcs,
     df <- df %>% mutate(Association = p.adjust(Association, method = p.adj))
   }
   df <- df %>% 
-    mutate(Significant = if_else(Association <= alpha, TRUE, FALSE), 
-           Association = -log(Association))
+    mutate(Significant = if_else(Association <= alpha, TRUE, FALSE), Association = -log(Association))
   
   # Build plot
   if (!p.adj %>% is.null && p.adj %in% c('fdr', 'BH', 'BY')) {
@@ -146,21 +141,24 @@ bio_drivers <- function(pcs,
   } else {
     leg_lab <- expression(~-log(italic(p)))
   }
+  if(is.null(max_col)) max_col = max(ceiling(df$Association), na.rm=T)
+  if(drop_insignificant) {
+    df = df[df$Feature %in% as.character(unique(df$Feature[df$Significant])), ]
+    df = df[df$PC %in% unique(df$PC[df$Significant]), ]
+  }
   p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association,
                       color = Significant)) +
     geom_tile(size = 1L, width = 0.9, height = 0.9) +
     coord_equal() +
-    scale_fill_gradientn(
-      colors = c('white',  'dodgerblue1', 'dodgerblue3', 'dodgerblue4'), 
-      name = leg_lab) +
+    scale_fill_gradientn(colors = c('white',  'dodgerblue1', 'dodgerblue3', 'dodgerblue4'), 
+                         name = leg_lab, limits=c(0, max_col)) +
     scale_color_manual(values = c('grey90', 'black')) +
     guides(color = FALSE) +
     labs(title = title, x = '', y='') +
     theme_bw() +
-    theme(plot.title = element_text(hjust = 0.5), 
-          axis.text.x = element_text(angle = 315, hjust = 0))
+    theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 315, hjust = 0))
   if (label) {
     p <- p + geom_text(aes(label = round(Association, 2L)))
   }
-  return(p)
+  if(return_plot) return(p) else return(df)
 }
