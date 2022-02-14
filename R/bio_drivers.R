@@ -153,8 +153,8 @@ plot_drivers <- function(pcs,
     scale_fill_gradientn(colors = c('white',  'dodgerblue1', 'dodgerblue3', 'dodgerblue4'), 
                          name = leg_lab, limits=c(0, max_col)) +
   scale_colour_manual(values=c("grey90", "black"), 
-                                       labels=c(paste(ifelse(is.null(p.adj), "p", "p adjusted"), ">", alpha), 
-                                       paste(ifelse(is.null(p.adj), "p", "p adjusted"), "≤", alpha)), name="") + 
+                                       labels=c(paste(ifelse(is.null(p.adj), "p", "q"), ">", alpha), 
+                                       paste(ifelse(is.null(p.adj), "p", "q"), "≤", alpha)), name="") + 
   guides(color = guide_legend(override.aes = list(fill = "white"))) +
     labs(title = title, x = '', y='') +
     theme_bw() +
