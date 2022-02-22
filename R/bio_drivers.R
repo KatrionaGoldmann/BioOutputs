@@ -40,6 +40,7 @@
 #' @param hover Show \emph{p}-values by hovering mouse over tiles? If 
 #'   \code{TRUE}, the plot is rendered in HTML and will either open in your 
 #'   browser's graphic display or appear in the RStudio viewer.
+#' @param transpose_plot Logical whether to transpose the plot.
 #' @param drop_insignificant Logical whether to remove clinical params and pcs where all non-significant
 #' @param return_plot Logical whether to return a plot or the data frame
 #'
@@ -116,6 +117,7 @@ plot_drivers <- function(pcs,
                          title = 'Variation By Feature',
                          legend = 'right',
                          hover = FALSE, 
+                         transpose_plot = FALSE,
                          drop_insignificant = FALSE, 
                          return_plot=TRUE) {
   
@@ -146,6 +148,7 @@ plot_drivers <- function(pcs,
     df = df[df$Feature %in% as.character(unique(df$Feature[df$Significant])), ]
     df = df[df$PC %in% unique(df$PC[df$Significant]), ]
   }
+  if(transpose_plot) df <- t(df)
   p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association,
                       color = Significant)) +
     geom_tile(size = 1L, width = 0.9, height = 0.9) +
