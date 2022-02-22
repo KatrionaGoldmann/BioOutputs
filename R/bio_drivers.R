@@ -100,7 +100,6 @@
 #' @importFrom kernlab rotated
 #' @import dplyr
 #' @import ggplot2
-#'
 
 plot_drivers <- function(pcs,
                          clin,
@@ -148,17 +147,18 @@ plot_drivers <- function(pcs,
     df = df[df$Feature %in% as.character(unique(df$Feature[df$Significant])), ]
     df = df[df$PC %in% unique(df$PC[df$Significant]), ]
   }
-  if(transpose_plot) df <- t(df)
-  p <- ggplot(df, aes(PC, Feature, fill = Association, text = Association,
+  df <- df %>% mutate(x= if(transpose_plot) df$Feature else df$PC, 
+                      y=if(transpose_plot) df$PC else df$Feature)
+  p <- ggplot(df, aes(x, y, fill = Association, text = Association,
                       color = Significant)) +
     geom_tile(size = 1L, width = 0.9, height = 0.9) +
     coord_equal() +
     scale_fill_gradientn(colors = c('white',  'dodgerblue1', 'dodgerblue3', 'dodgerblue4'), 
                          name = leg_lab, limits=c(0, max_col)) +
-  scale_colour_manual(values=c("grey90", "black"), 
-                                       labels=c(paste(ifelse(is.null(p.adj), "p", "q"), ">", alpha), 
-                                       paste(ifelse(is.null(p.adj), "p", "q"), "≤", alpha)), name="") + 
-  guides(color = guide_legend(override.aes = list(fill = "white"))) +
+    scale_colour_manual(values=c("grey90", "black"), 
+                        labels=c(paste(ifelse(is.null(p.adj), "p", "q"), ">", alpha), 
+                                 paste(ifelse(is.null(p.adj), "p", "q"), "≤", alpha)), name="") + 
+    guides(color = guide_legend(override.aes = list(fill = "white"))) +
     labs(title = title, x = '', y='') +
     theme_bw() +
     theme(plot.title = element_text(hjust = 0.5), axis.text.x = element_text(angle = 315, hjust = 0))
