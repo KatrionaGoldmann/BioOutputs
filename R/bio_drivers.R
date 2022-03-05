@@ -41,7 +41,8 @@
 #'   \code{TRUE}, the plot is rendered in HTML and will either open in your 
 #'   browser's graphic display or appear in the RStudio viewer.
 #' @param transpose_plot Logical whether to transpose the plot.
-#' @param drop_insignificant Logical whether to remove clinical params and pcs where all non-significant
+#' @param drop_insignificant_x Logical whether to remove clinical pcs where all non-significant
+#' @param drop_insignificant_y Logical whether to remove clinical params where all non-significant
 #' @param return_plot Logical whether to return a plot or the data frame
 #'
 #' @details
@@ -117,7 +118,8 @@ plot_drivers <- function(pcs,
                          legend = 'right',
                          hover = FALSE, 
                          transpose_plot = FALSE,
-                         drop_insignificant = FALSE, 
+                         drop_insignificant_x = FALSE, 
+                         drop_insignificant_y = FALSE, 
                          return_plot=TRUE) {
   
   
@@ -143,9 +145,11 @@ plot_drivers <- function(pcs,
     leg_lab <- expression(~-log(italic(p)))
   }
   if(is.null(max_col)) max_col = max(ceiling(df$Association), na.rm=T)
-  if(drop_insignificant) {
-    df = df[df$Feature %in% as.character(unique(df$Feature[df$Significant])), ]
+  if(drop_insignificant_x) {
     df = df[df$PC %in% unique(df$PC[df$Significant]), ]
+  }
+  if(drop_insignificant_y) {
+    df = df[df$Feature %in% as.character(unique(df$Feature[df$Significant])), ]
   }
   df <- df %>% mutate(x= if(transpose_plot) df$Feature else df$PC, 
                       y=if(transpose_plot) df$PC else df$Feature)
