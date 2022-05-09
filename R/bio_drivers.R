@@ -37,6 +37,8 @@
 #' @param legend Legend position. Must be one of \code{"bottom"}, \code{"left"},
 #'   \code{"top"}, \code{"right"}, \code{"bottomright"}, \code{"bottomleft"},
 #'   \code{"topleft"}, or \code{"topright"}.
+#' @param na_drop_theshold The number of non-NAs allowed for a column to be 
+#' included in clin
 #' @param hover Show \emph{p}-values by hovering mouse over tiles? If 
 #'   \code{TRUE}, the plot is rendered in HTML and will either open in your 
 #'   browser's graphic display or appear in the RStudio viewer.
@@ -113,17 +115,46 @@ plot_drivers <- function(pcs,
                          label = FALSE,
                          alpha = 0.05,
                          p.adj = NULL,
-                         max_col = NULL, 
+                         max_col = NULL,
                          title = 'Variation By Feature',
                          legend = 'right',
-                         hover = FALSE, 
+                         na_drop_theshold = 4,
+                         hover = FALSE,
                          transpose_plot = FALSE,
-                         drop_insignificant_x = FALSE, 
-                         drop_insignificant_y = FALSE, 
+                         drop_insignificant_x = FALSE,
+                         drop_insignificant_y = FALSE,
                          return_plot=TRUE) {
   
+  clin[clin == -Inf] = NA
+  clin[clin == Inf] = NA
   
-  sig <- function(j, pc) {                       # p-val fn
+  # remove columns where all values same (and non-NA)
+  remove_cols = apply(clin, 2, function(x) length(unique(x[! is.na(x)])) > 1 )
+  if(any(! remove_cols)) message(paste("removing columns all values identical:", 
+                                       paste(colnames(clin)[! remove_cols], collapse=", ")))
+  clin = clin[, remove_cols]
+  
+  # remove columns with too many NAs
+  remove_cols = apply(clin, 2, function(x) length(x[is.na(x)]) < ncol(clin) - na_drop_theshold)
+  if(any(! remove_cols)) message(paste("removing columns with too many NAs: ", 
+                                       paste(colnames(clin)[! remove_cols], collapse=", ")))
+  clin = clin[, remove_cols]
+  
+  # remove columns where all unique
+  numeric_cols = suppressWarnings(unlist(sapply(clin, function(x) {
+    ! all(is.na(as.numeric(as.character(x))))
+  } )))
+  remove_cols = apply(clin, 2, function(x) {
+    length(unique(x[! is.na(x)])) < ncol(clin) 
+  }) | numeric_cols
+  if(any(! remove_cols)) message(paste("removing columns all values unique and non-numeric: ", 
+                                       paste(colnames(clin)[! remove_cols], collapse=", ")))
+  clin = clin[, remove_cols]
+  
+
+  
+  sig <- function(j, pc) { # p-val fn
+    print(paste(j, pc))
     mod <- lm(pcs[, pc] ~ clin[[j]])
     if_else(clin[[j]] %>% is.numeric, summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
   }
