@@ -46,6 +46,7 @@
 #' @param drop_insignificant_x Logical whether to remove clinical pcs where all non-significant
 #' @param drop_insignificant_y Logical whether to remove clinical params where all non-significant
 #' @param return_plot Logical whether to return a plot or the data frame
+#' @param verbose Whether to print progress
 #'
 #' @details
 #' Strength of association is measured by -log \emph{p}-values, optionally
@@ -123,7 +124,8 @@ plot_drivers <- function(pcs,
                          transpose_plot = FALSE,
                          drop_insignificant_x = FALSE,
                          drop_insignificant_y = FALSE,
-                         return_plot=TRUE) {
+                         return_plot=TRUE, 
+                         verbose=FALSE) {
   
   clin[clin == -Inf] = NA
   clin[clin == Inf] = NA
@@ -154,7 +156,7 @@ plot_drivers <- function(pcs,
 
   
   sig <- function(j, pc) { # p-val fn
-    print(paste(j, pc))
+    if(verbose) print(paste(j, pc))
     mod <- lm(pcs[, pc] ~ clin[[j]])
     if_else(clin[[j]] %>% is.numeric, summary(mod)$coef[2L, 4L], anova(mod)[1L, 5L])
   }
